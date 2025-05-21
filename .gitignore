@@ -1,0 +1,12 @@
+backend/.env
+frontend/.env
+
+# Ignore dependency folders
+backend/node_modules/
+frontend/node_modules/
+
+# Logs and temp files
+*.log
+*.cache
+dist/
+build/
