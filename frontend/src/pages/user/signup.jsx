@@ -19,7 +19,8 @@ const SignUp = () => {
    if(email&&password&&role==='teacher'){
     try{
      const res = await api.post(`/teacher/signup`, {email:email, password:password});
-
+      console.log(res);
+      
      toast.success('Registered successfully! Redirecting...', {
       position: 'top-right',
       autoClose: 2000,

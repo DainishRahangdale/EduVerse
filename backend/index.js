@@ -4,7 +4,6 @@ const cors = require('cors');
 const Teacher = require('./routes/teacher')
 const Student = require('./routes/student');
 
-const pool = require('./db/db');
 const app = express();
 dotenv.config();
 
@@ -28,9 +27,6 @@ app.get('/', (req, res)=>{
 app.post('/', (req, res)=>{
     res.send('<p>this is server</p>')
 });
-
-
-
 
 
 app.use((req, res) => {

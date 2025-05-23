@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
         httpOnly: true,
         // secure: true, // use only on HTTPS
         sameSite: 'Strict',
-        maxAge: 60 * 60 * 1000, // 7 days
+        maxAge: 60 * 60 * 1000, // 1 h
       });
   
       // 6. Respond with success
