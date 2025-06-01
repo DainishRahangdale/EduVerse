@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../../db/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const SECRET = process.env.JWT_SECRET || "eduverse@123";
+const SECRET = process.env.JWT_SECRET;
 
 router.post('/', async (req, res) => {
     const { email, password } = req.body;
@@ -36,8 +36,8 @@ router.post('/', async (req, res) => {
       // 5. Set JWT as secure cookie
       res.cookie('token', token, {
         httpOnly: true,
-        // secure: true, // use only on HTTPS
-        sameSite: 'Strict',
+        secure: process.env.NODE_ENV === 'production',
+          sameSite: 'Strict',
         maxAge: 60 * 60 * 1000, // 1 h
       });
   

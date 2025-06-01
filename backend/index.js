@@ -3,6 +3,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const Teacher = require('./routes/teacher')
 const Student = require('./routes/student');
+const cookieParser = require('cookie-parser');
+const Logout = require('./routes/logout');
+const Auth = require('./routes/Auth')
 
 const app = express();
 dotenv.config();
@@ -14,11 +17,14 @@ app.use(cors(
    }
 ));
 app.use(express.json());
+app.use(cookieParser())
 
 
 
 app.use('/teacher',Teacher);
 app.use('/student', Student);
+app.use('/logout', Logout);
+app.use('/auth', Auth);
 
 
 app.get('/', (req, res)=>{

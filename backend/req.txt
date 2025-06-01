@@ -6,3 +6,4 @@ jsonwebtoken
 cookie-parser
 https://blog.logrocket.com/node-js-project-architecture-best-practices/
 npm install pg
+npm install multer

@@ -1,19 +1,51 @@
 import React from 'react'
 import { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
+import { useAuth } from '../../utils/authProvider';
 
 const login = () => {
   const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [role, setRole] = useState('student');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  const {setIsAuthenticated } =useAuth();
     
   
-    const handleSubmit = (e) => {
+    const handleSubmit =async (e) => {
       e.preventDefault();
-      console.log('Email:', email);
-      console.log('Password:', password);
-      console.log('Role:', role);
-      // Here you would typically send the data to an API (backend)
-      alert('Form Submitted!');
+      setMessage('');
+     if(email&&password&&role==='teacher'){
+      try{
+       const res = await api.post(`/teacher/login`, {email:email, password:password});
+       setIsAuthenticated(true);
+       toast.success('Login successfully! Redirecting...', {
+        position: 'top-right',
+        autoClose: 2000,
+      });
+      setTimeout(() => {
+        navigate('/teacher/dashboard');
+      }, 2000);
+  
+    }
+    catch(err){
+      console.log(err);
+      
+        toast.error(err.response?.data?.error || 'Login failed');
+    }
+       
+     }
+     else if(email&&password&&role==='student'){
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/student/login`, {email:email, password:password})
+     }
+     else{
+           setMessage("Enter information !!");
+     }
+      
     };
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center">
@@ -75,6 +107,7 @@ const login = () => {
           Doesn't have an account? <a href="/signup" className="text-blue-500 hover:text-blue-700">Sign Up</a>
         </p>
       </div>
+      <ToastContainer />
     </div>
   )
 }

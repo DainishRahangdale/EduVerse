@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const login = require('./Teacher/login');
 const signup = require('./Teacher/signup');
+const dashboard = require('./Teacher/dashboard');
 
 
 router.use('/login', login);
 router.use('/signup', signup);
-
+router.use('/dashboard', dashboard);
 
 router.post('/', async (req, res)=>{
      

@@ -7,12 +7,14 @@ import Login from './pages/user/login';
 import Signup from './pages/user/signup';
 import TeacherDashboard from './pages/teacher/teacherDashboard';
 import CourseDetails from "./pages/teacher/courseDetails";
+import { AuthProvider } from "./utils/authProvider";
+import { ProtectedRoute } from "./utils/ProtectedRoute";
 
 function App() {
   
 
   return (
-    <>
+    <AuthProvider>
     <Router>
       <Routes>
         <Route path="/" element={<Home/>}></Route>
@@ -21,11 +23,14 @@ function App() {
         <Route path="/contact" element={<Contact/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/signup" element={<Signup/>}/>
-        <Route path='/teacher/dashboard' element={<TeacherDashboard/>}/>
+        <Route path='/teacher/dashboard' element={
+          <ProtectedRoute>
+          <TeacherDashboard/>
+          </ProtectedRoute>}/>
         <Route path='/teacher/courseDetails' element={<CourseDetails/>}/>
       </Routes>
     </Router>
-    </>
+    </AuthProvider>
   )
 }
 
