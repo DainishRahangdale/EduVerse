@@ -13,7 +13,7 @@ const login = () => {
   const [role, setRole] = useState('student');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const {setIsAuthenticated } =useAuth();
+  const {setIsAuthenticated,setIsLoggingOut } =useAuth();
     
   
     const handleSubmit =async (e) => {
@@ -23,13 +23,14 @@ const login = () => {
       try{
        const res = await api.post(`/teacher/login`, {email:email, password:password});
        setIsAuthenticated(true);
+       setIsLoggingOut(false);
        toast.success('Login successfully! Redirecting...', {
         position: 'top-right',
-        autoClose: 2000,
+        autoClose: 1000,
       });
       setTimeout(() => {
         navigate('/teacher/dashboard');
-      }, 2000);
+      }, 1000);
   
     }
     catch(err){

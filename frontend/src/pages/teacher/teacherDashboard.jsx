@@ -20,11 +20,6 @@ const teacherDashboard = () => {
     setEditToggle(true);
   };
 
-  const handleAddCourse = (course) => {
-    setCourses((prev) => [...prev, course]);
-  };
-
-
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -83,7 +78,7 @@ const teacherDashboard = () => {
            editToggle &&<EditProfile teacher={teacher} profileEdit={setEditToggle}/>
       }    
 {courselist&&<section className="backdrop-blur-lg bg-white/60 border border-white/30 shadow-xl rounded-3xl p-6 m-2">
-  <AddCourseForm onAdd={handleAddCourse} toggle={setCourseList} teacherId={teacher.id} />
+  <AddCourseForm toggle={setCourseList} />
 </section>}
 
 

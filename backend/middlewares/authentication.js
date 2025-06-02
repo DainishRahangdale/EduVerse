@@ -2,6 +2,9 @@ const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET;
 
 const authenticate = (req, res, next) => {
+
+ 
+  
   const token = req.cookies.token;
 
   if (!token) {

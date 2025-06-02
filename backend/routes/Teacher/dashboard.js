@@ -1,4 +1,3 @@
-
 const express = require('express');
 const authenticate = require('../../middlewares/authentication');
 const router = express.Router();
@@ -7,9 +6,7 @@ const pool = require('../../db/db');
 const cloudinary = require('../../utils/cloudinary');
 const streamifier = require('streamifier');
 
-
 const upload = multer();
-
 
 
 const uploadToCloudinary = (imageBuffer) => {
@@ -41,7 +38,7 @@ router.get('/profile', authenticate, async(req, res)=>{
     }
 });
 
-router.put('/editProfile', authenticate, upload.single('image'), async (req, res) => {
+router.put('/editProfile', authenticate, upload.single('thumbnail'), async (req, res) => {
     const data = req.body;
     const image = req.file;
     const id = req.user.id;
@@ -102,6 +99,85 @@ router.put('/editProfile', authenticate, upload.single('image'), async (req, res
       return res.status(500).json({ error: 'Internal server error' });
     }
   });
+
+
+router.post('/addcourse',authenticate, upload.single('thumbnail'), async(req, res)=>{
+
+      const data = req.body;
+      const image = req.file;
+      const id = req.user.id;
+      const MAX_SIZE = 1 * 1024 * 1024;
+     
+     
+
+
+      try {
+
+        if (data.price !== undefined) {
+          const parsedPrice = parseFloat(data.price);
+          if (isNaN(parsedPrice)) {
+            return res.status(400).json({ error: 'Invalid price format' });
+          }
+          data.price = parsedPrice;
+        }
+
+        if (image) {
+          if (image.size > MAX_SIZE) {
+            return res.status(400).json({ error: 'File size exceeds 1MB limit' });
+          }
+    
+          // Upload new image to Cloudinary
+          const result = await uploadToCloudinary(image.buffer);
+    
+          data.public_id = result.public_id;
+          data.thumbnail_url = result.secure_url; // fixed typo: publid_id -> secure_url
+        }
+         
+        const allowedFields = ['title', 'description', 'price', 'duration', 'stream', 'thumbnail_url', 'public_id'];
+        const keys = [];
+        const values = [];
+        const placeholders = [];
+        
+        let index = 1;
+        
+        // Build fields from input data
+        for (const field of allowedFields) {
+          if (data[field] !== undefined) {
+            keys.push(field);
+            values.push(data[field]);
+            placeholders.push(`$${index}`);
+            index++;
+          }
+        }
+
+        console.log(keys);
+        
+        
+        // Ensure at least one field is being added
+        if (keys.length === 0) {
+          return res.status(400).json({ error: 'No valid fields provided for course creation' });
+        }
+        
+        // Add teacher_id
+        keys.push('teacher_id');
+        values.push(id);  // Assuming this is the teacher's ID
+        placeholders.push(`$${index}`);
+        
+        // Build and execute insert query
+        const query = `INSERT INTO courses (${keys.join(', ')}) VALUES (${placeholders.join(', ')})`;
+        
+       
+          await pool.query(query, values);
+          return res.status(200).json({ message: 'Course added successfully' });
+    
+        
+      } catch (error) {
+        console.log(error);
+        
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+    
+  })
   
 
 

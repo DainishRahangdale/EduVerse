@@ -4,6 +4,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
+import { useAuth } from '../../utils/authProvider';
+
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -11,7 +13,7 @@ const SignUp = () => {
   const [role, setRole] = useState('student');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  
+  const {setIsAuthenticated,setIsLoggingOut } =useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,15 +21,17 @@ const SignUp = () => {
    if(email&&password&&role==='teacher'){
     try{
      const res = await api.post(`/teacher/signup`, {email:email, password:password});
-      console.log(res);
-      
+     
+      setIsAuthenticated(true);
+      setIsLoggingOut(false);
      toast.success('Registered successfully! Redirecting...', {
       position: 'top-right',
-      autoClose: 2000,
+      autoClose: 1000,
     });
+   
     setTimeout(() => {
       navigate('/teacher/dashboard');
-    }, 2000);
+    }, 1000);
 
   }
   catch(err){

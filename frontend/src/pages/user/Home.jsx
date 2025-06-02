@@ -7,11 +7,12 @@ import Quize from '../../components/Home/quize'
 import TestimonialsSlider from '../../components/Home/testimonials'
 import CTASection from '../../components/Home/cta'
 import Footer from '../../components/Home/footer'
-
-
+import { useAuth } from '../../utils/authProvider'
 const Home = () => {
-  console.log(import.meta.env.VITE_APP_USER_NAME);
   
+  const {setIsLoggingOut } =useAuth();
+
+  setIsLoggingOut(false);
   return (
     <div className='bg-blue-100'>
       <Navbar/>
