@@ -13,7 +13,7 @@ const login = () => {
   const [role, setRole] = useState('student');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const {setIsAuthenticated,setIsLoggingOut } =useAuth();
+  const {setIsAuthenticated,setIsLoggingOut,setUserRole } =useAuth();
     
   
     const handleSubmit =async (e) => {
@@ -24,6 +24,7 @@ const login = () => {
        const res = await api.post(`/teacher/login`, {email:email, password:password});
        setIsAuthenticated(true);
        setIsLoggingOut(false);
+       setUserRole('teacher')
        toast.success('Login successfully! Redirecting...', {
         position: 'top-right',
         autoClose: 1000,
@@ -41,7 +42,26 @@ const login = () => {
        
      }
      else if(email&&password&&role==='student'){
-      const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/student/login`, {email:email, password:password})
+      try{
+        const res = await api.post(`/student/login`, {email:email, password:password});
+        setIsAuthenticated(true);
+        setIsLoggingOut(false);
+        setUserRole('student')
+        
+        toast.success('Login successfully! Redirecting...', {
+         position: 'top-right',
+         autoClose: 1000,
+       });
+       setTimeout(() => {
+         navigate('/student/dashboard');
+       }, 1000);
+   
+     }
+     catch(err){
+       console.log(err);
+       
+         toast.error(err.response?.data?.error || 'Login failed');
+     }
      }
      else{
            setMessage("Enter information !!");

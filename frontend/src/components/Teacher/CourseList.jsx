@@ -16,7 +16,7 @@ const CourseList = ({ teacherId }) => {
     const navigate = useNavigate();
   const courses = [
     {
-      title: "Mastering JavaScript 1",
+      title: "Mastering JavaScript",
       id: 'c1',
       image_url: "ulr",
       duration: '3 Months',

@@ -50,14 +50,14 @@ const AddCourseForm = ({ toggle }) => {
       await api.post("/teacher/dashboard/addcourse", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("Course Added successfully!");
+      toast.success("Course Added successfully!",{autoClose: 1000,});
 
       setTimeout(() => toggle(false), 1000);
     } catch (err) {
 
-      console.log(err);
+     
       
-      toast.error("Error adding course");
+      toast.error("Error adding course", {autoClose: 1000,});
     }
 
     // Reset form

@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET;
 
 router.post('/', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password,name } = req.body;
   
   
     try {
@@ -22,14 +22,14 @@ router.post('/', async (req, res) => {
   
       // 3. Insert new user
       const newUser = await pool.query(
-        'INSERT INTO teacher (email, password) VALUES ($1, $2) RETURNING id, email',
-        [email, hashedPassword]
+        'INSERT INTO teacher (email, password,name) VALUES ($1, $2, $3) RETURNING id, email',
+        [email, hashedPassword,name]
       );
   
       const user = newUser.rows[0];
   
       // 4. Generate JWT
-      const token = jwt.sign({ id: user.id, email: user.email }, SECRET, {
+      const token = jwt.sign({ id: user.id, email: user.email, role:"teacher" }, SECRET, {
         expiresIn: '1h',
       });
   

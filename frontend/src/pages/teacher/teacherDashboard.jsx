@@ -65,7 +65,7 @@ const teacherDashboard = () => {
   
   
   return (
-    <div className="min-h-screen  bg-gray-300 px-0 py-0.5 font-sans">
+    <div className="min-h-screen  bg-gray-100 px-0 py-0.5 font-sans">
     
       <Header name={teacher.name||teacher.email} />
       <div className='lg:flex h-full'>
@@ -84,10 +84,8 @@ const teacherDashboard = () => {
 
 <section className=" rounded-3xl pt-5 p-2 pl-0">
      <div className='flex justify-between'>
-      <h1 className='text-2xl font-semibold text-indigo-800'>
-      📚Your Courses
-      </h1>
-      <button className='border-2 flex gap-0 font-serif bg-indigo-600 text-white hover:scale-105 border-blue-600 p-1 rounded-md' onClick={()=>setCourseList(true)}>
+     <h1 className="text-2xl font-bold text-indigo-500 mb-1 animate-pulse">Welcome back, {teacher.name} 👋</h1>
+      <button className='flex gap-0 font-serif bg-gradient-to-br from-purple-500 to-blue-500 text-white hover:scale-105  p-1 rounded-md' onClick={()=>setCourseList(true)}>
         <span>< Plus/></span>New Course
         </button>
      </div>

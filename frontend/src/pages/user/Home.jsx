@@ -8,6 +8,9 @@ import TestimonialsSlider from '../../components/Home/testimonials'
 import CTASection from '../../components/Home/cta'
 import Footer from '../../components/Home/footer'
 import { useAuth } from '../../utils/authProvider'
+import WhyChooseUs from '../../components/Home/WhychooseUs'
+
+
 const Home = () => {
   
   const {setIsLoggingOut } =useAuth();
@@ -20,6 +23,7 @@ const Home = () => {
       <SubjectSlider/>
       <LiveChat/>
       <Quize/>
+      <WhyChooseUs/>
       <TestimonialsSlider/>
       <CTASection/>
       <Footer/>

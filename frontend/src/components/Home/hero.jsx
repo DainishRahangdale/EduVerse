@@ -2,13 +2,17 @@ import React from 'react'
 
 const hero = () => {
   return (
-      <section className="bg-indigo-50 min-h-screen flex items-center justify-center px-6 md:px-16">
+      <section className="bg-indigo-50 min-h-screen flex items-center justify-center px-6 md:px-16 relative">
   <div className="max-w-screen mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center py-16">
     
     
     <div className="space-y-6">
       <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-800 leading-tight">
-        Learn. Connect. <span class="text-indigo-600">Grow</span> with EduVerse
+        Learn. Connect. Grow. with
+        <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                EduVerse
+              </span>
+        
       </h1>
       <p className="text-gray-600 text-lg">
         Join interactive courses, live chats, and real-time tests from top educators — all in one place.
@@ -29,6 +33,8 @@ const hero = () => {
     </div>
 
   </div>
+  <div className="absolute top-20 left-10 w-20 h-20 bg-purple-500 rounded-full opacity-50 animate-bounce"></div>
+  <div className="absolute bottom-1 right-auto w-28 h-28 bg-indigo-400 rounded-full opacity-30 animate-pulse"></div>
 </section>
 
    

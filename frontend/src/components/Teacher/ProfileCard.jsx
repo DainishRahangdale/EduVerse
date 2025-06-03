@@ -5,7 +5,7 @@ import { Pencil } from 'lucide-react';
 const ProfileCard = ({ teacher,profileEdit}) => {
   return (
     <div className="bg-white/80 backdrop-blur-md shadow-lg overflow-hidden rounded-2xl flex flex-col    space-y-4">
-      <div className='bg-amber-900 w-full  h-20'>
+      <div className='bg-gradient-to-r from bg-purple-500 via-indigo-600 to-blue-500 w-full  h-20'>
       <img
         src={teacher.image_url || '/teacher_profile.png'}
         alt="Teacher"
