@@ -81,8 +81,8 @@ const EditProfile = ({ teacher, profileEdit }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mr-1 mt-10 p-8 border border-gray-300 bg-gray-50 shadow-md rounded-md">
-      <h2 className="text-3xl font-semibold text-center mb-6 text-gray-800">
+    <div className="max-w-4xl mx-auto mr-1 mt-5 p-8 border border-gray-300 bg-gray-50 shadow-md rounded-md">
+      <h2 className="text-3xl font-semibold text-center mb-6 text-blue-800">
         Teacher Profile Form
       </h2>
       <form onSubmit={handleSubmit} className="space-y-6 text-gray-700">

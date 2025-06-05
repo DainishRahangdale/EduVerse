@@ -84,9 +84,9 @@ const CourseList = ({ teacherId }) => {
                 <span className="flex items-center gap-1"><BookOpen size={16} /> {course.stream}</span>
                 <span className="flex items-center gap-1 text-green-600"><DollarSign size={16} /> ₹{course.offer}</span>
               </div>
-              <div className='flex justify-between'>
+              <div className='flex justify-between mt-2'>
               <p className="text-xs text-gray-400">Created on: {course.created_on}</p>
-              <button className='text-sm text-blue-900 underline hover:cursor-pointer -mt-4' onClick={()=>{navigate('/teacher/courseDetails')}}>View Course</button>
+              <button className='border-1 p-1 text-sm bg-blue-500 text-white rounded-sm  hover:cursor-pointer' onClick={()=>{navigate('/teacher/courseDetails')}}>View Course</button>
 
               </div>
             </div>
@@ -175,7 +175,7 @@ const CourseStats = ({ courses }) => {
         </div>
   
         {/* Line Chart */}
-        <div className="bg-green-200 p-4 rounded-xl shadow">
+        <div className="bg-neutral-200 p-4 rounded-xl shadow">
           <h3 className="text-lg font-semibold mb-4">Monthly Student Enrollment</h3>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={studentsPerMonth}>
@@ -189,7 +189,7 @@ const CourseStats = ({ courses }) => {
         </div>
   
         {/* Bar Chart */}
-        <div className="bg-white p-4 rounded-xl shadow">
+        <div className="bg-neutral-200 p-4 rounded-xl shadow">
           <h3 className="text-lg font-semibold mb-4">Courses Added Monthly</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={coursesPerMonth}>
@@ -204,7 +204,7 @@ const CourseStats = ({ courses }) => {
         </div>
   
         {/* Pie Chart */}
-        <div className="bg-white p-4 rounded-xl shadow">
+        <div className="bg-neutral-200 p-4 rounded-xl shadow">
           <h3 className="text-lg font-semibold mb-4">Course Streams Distribution</h3>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>

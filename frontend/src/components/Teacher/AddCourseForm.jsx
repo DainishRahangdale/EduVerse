@@ -71,7 +71,7 @@ const AddCourseForm = ({ toggle }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6  p-6  max-w-2xl mx-auto">
-      <h3 className="text-2xl font-bold text-indigo-800 mb-4">
+      <h3 className="text-2xl font-bold text-blue-800 mb-4">
         📚 Add New Course
       </h3>
 
@@ -81,7 +81,7 @@ const AddCourseForm = ({ toggle }) => {
         </label>
         <input
           type="text"
-          className="w-full px-4 py-2 border rounded-md"
+          className="form-input"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
@@ -95,7 +95,7 @@ const AddCourseForm = ({ toggle }) => {
           </label>
           <input
             type="number"
-            className="w-full px-4 py-2 border rounded-md"
+            className="form-input"
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
           />
@@ -107,7 +107,7 @@ const AddCourseForm = ({ toggle }) => {
           </label>
           <input
             type="text"
-            className="w-full px-4 py-2 border rounded-md"
+            className="form-input"
             value={stream}
             onChange={(e) => setStream(e.target.value)}
             placeholder="Arts,Science,Computer Science, etc."
@@ -121,7 +121,7 @@ const AddCourseForm = ({ toggle }) => {
           </label>
           <input
             type="text"
-            className="w-full px-4 py-2 border rounded-md"
+            className="form-input"
             placeholder="in Months"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
@@ -134,7 +134,7 @@ const AddCourseForm = ({ toggle }) => {
           </label>
           <input
             type="file"
-            className="w-full px-4 py-2 border rounded-md"
+            className="form-input"
             onChange={(e) => setThumbnail(e.target.files[0])}
             accept="image/*"
           />
@@ -146,7 +146,7 @@ const AddCourseForm = ({ toggle }) => {
           Description
         </label>
         <textarea
-          className="w-full px-4 py-2 border rounded-md"
+          className="form-input"
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
           rows={4}
@@ -155,13 +155,13 @@ const AddCourseForm = ({ toggle }) => {
       <div className="flex justify-between">
         <button
           type="submit"
-          className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-2 rounded-md shadow-md hover:scale-105 transition transform"
+          className="bg-green-600 text-white px-6 py-2 rounded-md shadow-md hover:scale-105 transition transform"
         >
           {"Add Course"}
         </button>
 
         <button
-          className="bg-gradient-to-r from-orange-300 to-red-600 text-white px-6 py-2 rounded-md shadow-md hover:scale-105 transition transform"
+          className="bg-red-600 text-white px-6 py-2 rounded-md shadow-md hover:scale-105 transition transform"
           onClick={() => toggle(false)}
         >
           Cancel

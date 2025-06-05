@@ -12,6 +12,7 @@ import { ProtectedRoute } from "./utils/ProtectedRoute";
 import StudentDashboard from "./pages/student/studentDashboard";
 import CourseDetail from "./pages/CourseDetails";
 import PaymentPage from "./pages/payment";
+import PageNotFound from './pages/PageNotFound';
 
 function App() {
   
@@ -39,6 +40,7 @@ function App() {
           </ProtectedRoute>
         }></Route>  
         <Route path='/teacher/courseDetails' element={<CourseDetails/>}/>
+        <Route path="*" element={<PageNotFound/>}></Route>
       </Routes>
     </Router>
     </AuthProvider>

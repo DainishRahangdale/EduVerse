@@ -5,7 +5,8 @@ const Teacher = require('./routes/teacher')
 const Student = require('./routes/student');
 const cookieParser = require('cookie-parser');
 const Logout = require('./routes/logout');
-const Auth = require('./routes/Auth')
+const Auth = require('./routes/Auth');
+const Payment = require('./routes/payment');
 
 const app = express();
 dotenv.config();
@@ -25,6 +26,7 @@ app.use('/teacher',Teacher);
 app.use('/student', Student);
 app.use('/logout', Logout);
 app.use('/auth', Auth);
+app.use('/payment', Payment);
 
 
 app.get('/', (req, res)=>{

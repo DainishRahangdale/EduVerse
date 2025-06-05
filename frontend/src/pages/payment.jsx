@@ -1,27 +1,95 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { BookOpen, User, Calendar, Clock, Star, Play, CheckCircle, CreditCard, Lock, ArrowLeft  } from "lucide-react";
-
+import api from "../utils/api";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 const PaymentPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const course = location.state?.course;
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+  });
+  const handleChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
 
   if (!course) {
     return <div className="text-center text-red-500 mt-10">Course data not found.</div>;
   }
 
-  const handlePayment = () => {
-    alert(`Payment successful for ${course.title}!`);
-    navigate("/dashboard");
+  const loadRazorpay = async (orderData) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID, // or use process.env in Vite/React app
+      amount: orderData.amount,
+      currency: orderData.currency,
+      name: "EduVerse",
+      description: course.title,
+      order_id: orderData.order_id,
+      handler: async function (response) {
+        
+       toast.success("Payment Successfull!!",{ position: 'top-right',
+        autoClose: 1000,});
+
+        setTimeout(() => {
+            navigate('/student/dashboard');
+          }, 1000);
+      },
+      prefill: {
+        name: formData.name,
+        email: formData.email,
+        contact: formData.phone,
+      },
+      notes: {
+        address: formData.address,
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
+ 
   const orderSummary = {
     subtotal: course.price,
     tax: course.price * 0.08, // 8% tax
     total: course.price * 1.08
   };
   
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+   
+      const res = await api.post(
+        '/payment/create-order',
+        {
+          ...formData,
+          course_id: course.id,
+          amount: orderSummary.total,
+          currency: 'INR',
+        },
+        
+      );
+
+      loadRazorpay(res.data);
+    } catch (error) {
+      console.error("Payment init failed", error);
+      alert("Something went wrong during payment.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
@@ -55,7 +123,53 @@ const PaymentPage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-
+            <div className="max-w-md mx-auto p-4 border rounded shadow">
+      <h2 className="text-xl font-semibold mb-4">Complete Your Purchase</h2>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <input
+          name="name"
+          type="text"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          className="w-full border p-2 rounded"
+        />
+        <input
+          name="email"
+          type="email"
+          placeholder="Email Address"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          className="w-full border p-2 rounded"
+        />
+        <input
+          name="phone"
+          type="tel"
+          placeholder="Phone Number"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+          className="w-full border p-2 rounded"
+        />
+        <textarea
+          name="address"
+          placeholder="Address"
+          value={formData.address}
+          onChange={handleChange}
+          required
+          className="w-full border p-2 rounded"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          {loading ? 'Processing...' : `Pay ₹${orderSummary.total}`}
+        </button>
+      </form>
+    </div>
             </div>
 
         <div className="lg:col-span-1">
