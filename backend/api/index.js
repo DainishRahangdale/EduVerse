@@ -2,7 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const serverless = require('serverless-http');
+
 
 
 // const Teacher = require('../routes/teacher');
@@ -40,4 +40,4 @@ app.use((req, res) => {
 });
 
 
-module.exports.handler = serverless(app);
+module.exports = require('serverless-http')(app);
