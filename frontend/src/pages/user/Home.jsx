@@ -8,7 +8,8 @@ import TestimonialsSlider from '../../components/Home/testimonials'
 import CTASection from '../../components/Home/cta'
 import Footer from '../../components/Home/footer'
 import { useAuth } from '../../utils/authProvider'
-import WhyChooseUs from '../../components/Home/WhychooseUs'
+import WhyChooseUs from '../../components/Home/WhychooseUs';
+import HeroSection from '../../components/Home/HeroAnimation'
 
 
 const Home = () => {
@@ -17,9 +18,11 @@ const Home = () => {
 
   setIsLoggingOut(false);
   return (
-    <div className='bg-blue-100'>
+    <div className='bg-blue-100 min-h-screen'>
+      {/* className="" */}
       <Navbar/>
-      <Hero/>
+      {/* <Hero/> */}
+      <HeroSection/>
       <SubjectSlider/>
       <LiveChat/>
       <Quize/>

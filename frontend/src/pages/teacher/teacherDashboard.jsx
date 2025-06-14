@@ -77,7 +77,7 @@ const teacherDashboard = () => {
       {
            editToggle &&<EditProfile teacher={teacher} profileEdit={setEditToggle}/>
       }    
-{!courselist&&<section className="border border-gray-300 bg-gray-50 shadow-md rounded-md p-3 mt-5">
+{courselist&&<section className="border border-gray-300 bg-gray-50 shadow-md rounded-md p-3 mt-5">
   <AddCourseForm toggle={setCourseList} />
 </section>}
 

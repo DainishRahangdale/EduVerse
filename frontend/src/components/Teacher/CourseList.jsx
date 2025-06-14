@@ -9,83 +9,72 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer,  LineChart,
     BarChart,
     Bar,
     Legend, } from 'recharts';
+ import { useState, useEffect } from 'react';   
+import api from '../../utils/api';
+import { toast, ToastContainer } from 'react-toastify';
+
+  
+    const courses1 = [
+      {
+        title: "Mastering JavaScript",
+        id: 'c1',
+        image_url: "ulr",
+        duration: '3 Months',
+        price: '4999',
+        offer: '3999',
+        stream: 'Programming',
+        created_on: '2024-09-01',
+        desc: 'Learn JavaScript from scratch with projects and real-world applications.',
+        num_of_students_enrolled: 120,
+      }
+    ];
   
 
-
-const CourseList = ({ teacherId }) => {
+const CourseList = () => {
     const navigate = useNavigate();
-  const courses = [
-    {
-      title: "Mastering JavaScript",
-      id: 'c1',
-      image_url: "ulr",
-      duration: '3 Months',
-      price: '4999',
-      offer: '3999',
-      stream: 'Programming',
-      created_on: '2024-09-01',
-      desc: 'Learn JavaScript from scratch with projects and real-world applications.',
-      num_of_students_enrolled: 120,
-    },
-    {
-      title: "React for Beginners",
-      id: 'c2',
-      image_url: "https://source.unsplash.com/400x250/?reactjs,frontend",
-      duration: '2 Months',
-      price: '5999',
-      offer: '4599',
-      stream: 'Frontend',
-      created_on: '2024-10-01',
-      desc: 'Build interactive UIs using React, hooks, and state management.',
-      num_of_students_enrolled: 95,
-    },
-    {
-      title: "Python for Data Science",
-      id: 'c3',
-      image_url: "/ai_ml_course.jpeg",
-      duration: '4 Months',
-      price: '6999',
-      offer: '5499',
-      stream: 'Data Science',
-      created_on: '2024-08-01',
-      desc: 'Master Python, pandas, and NumPy for analysis and ML basics.',
-      num_of_students_enrolled: 150,
-    },
-    {
-      title: "UI/UX Fundamentals",
-      id: 'c4',
-      image_url: "https://source.unsplash.com/400x250/?design,ux",
-      duration: '1.5 Months',
-      price: '3999',
-      offer: '2999',
-      stream: 'Design',
-      created_on: '2024-07-15',
-      desc: 'Understand UX principles, wireframing, and Figma prototyping.',
-      num_of_students_enrolled: 78,
-    },
-  ];
+    const [courses, setCourses] = useState([]);
 
+   useEffect( ()=>{
+const fetchData = async ()=>{
+     try {
+      const result = await api.get('/teacher/dashboard/allcourse');
+      
+      setCourses(result.data.data);
+
+     } catch (error) {
+      toast.error("there is error in server",{
+        autoClose:500,
+      })
+     }
+};
+
+fetchData();
+
+   },[])
+
+  
   return (
     <div className="mt-3 px-2">
-      <CourseStats courses={courses}/>
+      {courses.length>0&&<CourseStats courses={courses}/>}
+      
       <div className="grid grid-cols-1 sm:grid-cols-2  gap-6">
-        {courses.map((course) => (
+        {courses.length>0&&courses.map((course) => (
           <div key={course.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300">
-            <img src={course.image_url} alt={course.title} className="w-full h-40 object-cover" />
+            <img src={course.thumbnail_url} alt={course.title} className="w-full h-40 object-cover" />
             <div className="p-4 space-y-2">
               <h3 className="text-xl font-semibold text-purple-700">{course.title}</h3>
-              <p className="text-sm text-gray-600">{course.desc}</p>
+              <p className="text-sm text-gray-600">{course.description}</p>
               <hr className='text-blue-900'/>
               <div className="flex justify-between items-center text-sm text-gray-600 pt-2">
                 <span className="flex items-center gap-1"><Clock size={16} /> {course.duration}</span>
-                <span className="flex items-center gap-1"><Users size={16} /> {course.num_of_students_enrolled} Enrolled</span>
+                <span className="flex items-center gap-1"><Users size={16} /> {course.nums_of_students} Enrolled</span>
               </div>
               <div className="flex justify-between items-center text-sm text-gray-700">
                 <span className="flex items-center gap-1"><BookOpen size={16} /> {course.stream}</span>
                 <span className="flex items-center gap-1 text-green-600"><DollarSign size={16} /> ₹{course.offer}</span>
               </div>
               <div className='flex justify-between mt-2'>
-              <p className="text-xs text-gray-400">Created on: {course.created_on}</p>
+              <p className="text-xs text-gray-400">Created on: {course.created_on.toLocaleString()}</p>
               <button className='border-1 p-1 text-sm bg-blue-500 text-white rounded-sm  hover:cursor-pointer' onClick={()=>{navigate('/teacher/courseDetails')}}>View Course</button>
 
               </div>
@@ -93,6 +82,7 @@ const CourseList = ({ teacherId }) => {
           </div>
         ))}
       </div>
+      <ToastContainer/>
     </div>
   );
 };
@@ -128,7 +118,7 @@ const CourseStats = ({ courses }) => {
           const created = new Date(c.created_on);
           return created.getMonth() === month && created.getFullYear() === year;
         })
-        .reduce((sum, c) => sum + (c.num_of_students_enrolled || 0), 0);
+        .reduce((sum, c) => sum + (c.nums_of_students|| 0), 0);
       return { month: label, students: totalStudents };
     });
   
@@ -145,7 +135,7 @@ const CourseStats = ({ courses }) => {
     }));
   
     const totalCourses = courses.length;
-    const totalStudents = courses.reduce((sum, c) => sum + (c.num_of_students_enrolled || 0), 0);
+    const totalStudents = courses.reduce((sum, c) => sum + (c.nums_of_students || 0), 0);
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     const currentMonthCourses = courses.filter((c) => {
@@ -229,3 +219,27 @@ const CourseStats = ({ courses }) => {
     );
   };
   
+
+
+
+
+
+
+/*  {
+            course_id : 1,
+            "description": "this is  js course",
+            "thumbnail_url": "https://res.cloudinary.com/dfm40rrao/image/upload/v1748889991/uploads/file_fhrivt.jpg",
+            "public_id": "uploads/file_fhrivt",
+            "nums_of_students": 0,
+            "is_public": false
+
+
+        id: 'c1',
+        image_url: "ulr",
+       
+        desc: 'Learn JavaScript from scratch with projects and real-world applications.',
+        num_of_students_enrolled: 120,
+      },
+  }
+
+  */

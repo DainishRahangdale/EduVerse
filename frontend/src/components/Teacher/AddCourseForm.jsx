@@ -55,8 +55,6 @@ const AddCourseForm = ({ toggle }) => {
       setTimeout(() => toggle(false), 1000);
     } catch (err) {
 
-     
-      
       toast.error("Error adding course", {autoClose: 1000,});
     }
 

@@ -38,7 +38,7 @@ router.get('/profile', authenticate, async(req, res)=>{
     }
 });
 
-router.put('/editProfile', authenticate, upload.single('thumbnail'), async (req, res) => {
+router.put('/editProfile', authenticate, upload.single('image'), async (req, res) => {
     const data = req.body;
     const image = req.file;
     const id = req.user.id;
@@ -108,9 +108,6 @@ router.post('/addcourse',authenticate, upload.single('thumbnail'), async(req, re
       const id = req.user.id;
       const MAX_SIZE = 1 * 1024 * 1024;
      
-     
-
-
       try {
 
         if (data.price !== undefined) {
@@ -177,6 +174,23 @@ router.post('/addcourse',authenticate, upload.single('thumbnail'), async(req, re
         return res.status(500).json({ error: 'Internal Server Error' });
       }
     
+  });
+
+  //to get the all courses for dashboard
+
+  router.get('/allcourse',authenticate, async(req, res)=>{
+      const id = req.user.id;
+    try {
+
+      const query = `select * from courses where teacher_id = $1`;
+
+     const data =  await pool.query(query, [id]);
+    //   for all course related to id
+      res.status(201).json({data: data.rows});
+      
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
   })
   
 

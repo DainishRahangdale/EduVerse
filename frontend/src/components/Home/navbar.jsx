@@ -1,14 +1,21 @@
 // src/components/Navbar.jsx
-
+import { BookOpen } from "lucide-react";
 const Navbar = () => {
     return (
       <nav className="sticky bg-white/80 backdrop-blur-md top-0 z-50 shadow-sm shadow-puple-400  text-indigo-900 p-1 pl-4 md:p-4  ">
         <div className="flex  md:flex-row md:items-center md:justify-between max-w-full mx-auto">
           {/* Logo */}
           <div className="text-lg md:text-2xl font-bold tracking-wide  md:mb-0">
-          <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                EduVerse
-              </span>
+          <div className="opacity-100 animate-fadeInLeft">
+              <div className="flex items-center space-x-3 ">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center animate-glow">
+                  <BookOpen className="w-6 h-6 text-white" />
+                </div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  EduVerse
+                </h1>
+              </div>
+            </div>
           </div>
   
           {/* Nav Links */}
