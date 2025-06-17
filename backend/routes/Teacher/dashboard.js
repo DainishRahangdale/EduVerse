@@ -191,7 +191,70 @@ router.post('/addcourse',authenticate, upload.single('thumbnail'), async(req, re
     } catch (error) {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
-  })
+  });
+
+
+  router.put('/editcourse', authenticate, upload.single('thumbnail'), async (req, res) => {
+    const data = req.body;
+    const image = req.file;
+    const id = req.user.id;
+   
+    const MAX_SIZE = 1 * 1024 * 1024; // 1MB
+    
+    try {
+      // Fetch existing teacher data
+      let DataResult = await pool.query(`SELECT * FROM courses WHERE course_id = $1 and teacher_id = $2`, [data.course_id, id]);
+      let courseData = DataResult.rows[0];
+  
+      // Validate image size
+      if (image) {
+        if (image.size > MAX_SIZE) {
+          return res.status(400).json({ error: 'File size exceeds 1MB limit' });
+        }
+  
+        // Delete old image from Cloudinary if exists
+        if (courseData && courseData.public_id) {
+          await cloudinary.uploader.destroy(courseData.public_id);
+        }
+  
+        // Upload new image to Cloudinary
+        const result = await uploadToCloudinary(image.buffer);
+  
+        data.public_id = result.public_id;
+        data.thumbnail_url = result.secure_url; // fixed typo: publid_id -> secure_url
+      }
+  
+      // Build dynamic SET clause for update query
+      const allowedFields = ['title', 'description', 'price', 'duration', 'stream', 'thumbnail_url', 'public_id'];
+      const keys = [];
+      const values = [];
+  
+      let index = 1;
+      for (const field of allowedFields) {
+        if (data[field] !== undefined) {
+          keys.push(`${field} = $${index}`);
+          values.push(data[field]);
+          index++;
+        }
+      }
+  
+      if (keys.length === 0) {
+        return res.status(400).json({ error: 'No valid fields provided for update' });
+      }
+  
+      // Add condition parameter (id)
+      values.push(data.course_id);
+  
+      const query = `UPDATE courses SET ${keys.join(', ')} WHERE course_id = $${index}`;
+      await pool.query(query, values);
+  
+      return res.status(200).json({ message: 'Course updated successfully' });
+  
+    } catch (error) {
+      console.error('Error updating Course:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  });
   
 
 

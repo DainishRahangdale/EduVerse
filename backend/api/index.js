@@ -4,13 +4,6 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 
-
-// const Teacher = require('../routes/teacher');
-// const Student = require('../routes/student');
-// const Logout = require('../routes/logout');
-// const Auth = require('../routes/Auth');
-// const Payment = require('../routes/payment');
-
 const app = express();
 dotenv.config();
 
@@ -21,11 +14,6 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// app.use('/teacher', Teacher);
-// app.use('/student', Student);
-// app.use('/logout', Logout);
-// app.use('/auth', Auth);
-// app.use('/payment', Payment);
 
 app.get('/', (req, res) => {
   res.send('<p>This is server</p>');

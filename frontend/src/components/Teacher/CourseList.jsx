@@ -12,7 +12,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer,  LineChart,
  import { useState, useEffect } from 'react';   
 import api from '../../utils/api';
 import { toast, ToastContainer } from 'react-toastify';
-
+import { useCourse } from './course/courseContext';
   
     const courses1 = [
       {
@@ -32,7 +32,8 @@ import { toast, ToastContainer } from 'react-toastify';
 
 const CourseList = () => {
     const navigate = useNavigate();
-    const [courses, setCourses] = useState([]);
+   
+    const { courses, setCourses } = useCourse();
 
    useEffect( ()=>{
 const fetchData = async ()=>{
@@ -55,10 +56,10 @@ fetchData();
   
   return (
     <div className="mt-3 px-2">
-      {courses.length>0&&<CourseStats courses={courses}/>}
+      {courses.length>0&&<CourseStats course={courses}/>}
       
       <div className="grid grid-cols-1 sm:grid-cols-2  gap-6">
-        {courses.length>0&&courses.map((course) => (
+        {courses.length>0&&courses?.map((course) => (
           <div key={course.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300">
             <img src={course.thumbnail_url} alt={course.title} className="w-full h-40 object-cover" />
             <div className="p-4 space-y-2">
@@ -75,7 +76,7 @@ fetchData();
               </div>
               <div className='flex justify-between mt-2'>
               <p className="text-xs text-gray-400">Created on: {course.created_on.toLocaleString()}</p>
-              <button className='border-1 p-1 text-sm bg-blue-500 text-white rounded-sm  hover:cursor-pointer' onClick={()=>{navigate('/teacher/courseDetails')}}>View Course</button>
+              <button className='border-1 p-1 text-sm bg-blue-500 text-white rounded-sm  hover:cursor-pointer' onClick={()=>{navigate('/teacher/courseDetails', {state:{course}})}}>View Course</button>
 
               </div>
             </div>
@@ -91,7 +92,7 @@ export default CourseList;
 
 const COLORS = ['#a78bfa', '#f472b6', '#60a5fa', '#facc15', '#34d399'];
 
-const CourseStats = ({ courses }) => {
+const CourseStats = ({ course }) => {
     const now = new Date();
     const last12Months = Array.from({ length: 12 }, (_, i) => {
       const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
@@ -104,7 +105,7 @@ const CourseStats = ({ courses }) => {
   
     // Histogram Data - Courses Added Per Month
     const coursesPerMonth = last12Months.map(({ label, month, year }) => {
-      const count = courses.filter((c) => {
+      const count = course?.filter((c) => {
         const created = new Date(c.created_on);
         return created.getMonth() === month && created.getFullYear() === year;
       }).length;
@@ -113,8 +114,7 @@ const CourseStats = ({ courses }) => {
   
     // Line Graph Data - Students Enrolled Per Month
     const studentsPerMonth = last12Months.map(({ label, month, year }) => {
-      const totalStudents = courses
-        .filter((c) => {
+      const totalStudents = course?.filter((c) => {
           const created = new Date(c.created_on);
           return created.getMonth() === month && created.getFullYear() === year;
         })
@@ -124,7 +124,7 @@ const CourseStats = ({ courses }) => {
   
     // Pie Chart Data - Stream Distribution
     const streamCount = {};
-    courses.forEach((c) => {
+    course?.forEach((c) => {
       if (c.stream) {
         streamCount[c.stream] = (streamCount[c.stream] || 0) + 1;
       }
@@ -134,11 +134,11 @@ const CourseStats = ({ courses }) => {
       value,
     }));
   
-    const totalCourses = courses.length;
-    const totalStudents = courses.reduce((sum, c) => sum + (c.nums_of_students || 0), 0);
+    const totalCourses = course.length;
+    const totalStudents = course?.reduce((sum, c) => sum + (c.nums_of_students || 0), 0);
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
-    const currentMonthCourses = courses.filter((c) => {
+    const currentMonthCourses = course?.filter((c) => {
       const created = new Date(c.created_on);
       return created.getMonth() === currentMonth && created.getFullYear() === currentYear;
     }).length;
