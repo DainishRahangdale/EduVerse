@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Upload, X } from "lucide-react";
 import api from "../../../utils/api";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useCourse } from "./courseContext";
 
 export default function EditCourseModal({ course, onClose }) {
@@ -35,10 +35,17 @@ export default function EditCourseModal({ course, onClose }) {
       [field]: value,
     }));
   };
+  const MAX_SIZE = 1 * 1024 * 1024;
 
   const handleThumbnailUpload = (event) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.size > MAX_SIZE) {
+        toast.error(
+          "File size exceeds 1MB limit. Please choose a smaller file."
+        );
+        return;
+      }
       setFormData((prev) => ({ ...prev, thumbnail: file }));
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -208,6 +215,7 @@ export default function EditCourseModal({ course, onClose }) {
           </button>
         </div>
       </div>
+      <ToastContainer/>
     </div>
   );
 }

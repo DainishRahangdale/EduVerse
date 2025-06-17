@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import { useAuth } from '../../utils/authProvider';
+import { BookOpen } from 'lucide-react';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -79,118 +80,128 @@ const SignUp = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          <div className="flex flex-col">
-            <label htmlFor="email" className="text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={handleChange('email', setEmail)}
-              placeholder="Enter your email"
-              className={`border rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
-            />
-            {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="password" className="text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={handleChange('password', setPassword)}
-              placeholder="Enter your password"
-              className={`border rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
-            />
-            {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password}</p>}
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={confirmPassword}
-              onChange={handleChange('confirmPassword', setConfirmPassword)}
-              placeholder="Confirm your password"
-              className={`border rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
-            />
-            {errors.confirmPassword && <p className="text-red-600 text-sm mt-1">{errors.confirmPassword}</p>}
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="name" className="text-sm font-medium text-gray-700">
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={name}
-              onChange={handleChange('name', setName)}
-              placeholder="Enter your full name"
-              className={`border rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                errors.name ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
-            />
-            {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
-          </div>
-
-          <div className="flex flex-col">
-            <label htmlFor="role" className="text-sm font-medium text-gray-700">
-              Role
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={role}
-              onChange={handleChange('role', setRole)}
-              className={`border rounded-md px-4 py-2 focus:outline-none focus:ring-2 ${
-                errors.role ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
-            >
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-            </select>
-            {errors.role && <p className="text-red-600 text-sm mt-1">{errors.role}</p>}
-          </div>
-
-          <button
-            type="submit"
-            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
-          >
-            Sign Up
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-gray-500">
-          Already have an account?{' '}
-          <a href="/login" className="text-blue-500 hover:text-blue-700">
-            Login
-          </a>
-        </p>
+    <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen flex flex-col items-center">
+  {/* Header */}
+  <header className="w-full flex justify-between items-center px-6 py-4 bg-white/60 shadow-sm backdrop-blur-md">
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+        <BookOpen className="w-6 h-6 text-white" />
       </div>
-      <ToastContainer />
+      <h1
+        className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        EduVerse
+      </h1>
     </div>
+  </header>
+
+  {/* Sign Up Card */}
+  <div className="bg-white p-8 rounded-2xl shadow-xl w-[90%] max-w-md mt-8 transition-all duration-300">
+    <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Create Your Account</h2>
+    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      
+      {/* Name */}
+      <div>
+        <label htmlFor="name" className="text-sm font-medium text-gray-700">Name</label>
+        <input
+          id="name"
+          type="text"
+          value={name}
+          onChange={handleChange('name', setName)}
+          placeholder="Enter your full name"
+          className={`w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+            errors.name ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+          }`}
+        />
+        {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
+      </div>
+
+      {/* Email */}
+      <div>
+        <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
+        <input
+          id="email"
+          type="email"
+          value={email}
+          onChange={handleChange('email', setEmail)}
+          placeholder="Enter your email"
+          className={`w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+            errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+          }`}
+        />
+        {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
+      </div>
+
+      {/* Password */}
+      <div>
+        <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
+        <input
+          id="password"
+          type="password"
+          value={password}
+          onChange={handleChange('password', setPassword)}
+          placeholder="Enter your password"
+          className={`w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+            errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+          }`}
+        />
+        {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password}</p>}
+      </div>
+
+      {/* Confirm Password */}
+      <div>
+        <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">Confirm Password</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          value={confirmPassword}
+          onChange={handleChange('confirmPassword', setConfirmPassword)}
+          placeholder="Confirm your password"
+          className={`w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+            errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+          }`}
+        />
+        {errors.confirmPassword && <p className="text-red-600 text-sm mt-1">{errors.confirmPassword}</p>}
+      </div>
+
+      {/* Role */}
+      <div>
+        <label htmlFor="role" className="text-sm font-medium text-gray-700">Role</label>
+        <select
+          id="role"
+          value={role}
+          onChange={handleChange('role', setRole)}
+          className={`w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+            errors.role ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+          }`}
+        >
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+        </select>
+        {errors.role && <p className="text-red-600 text-sm mt-1">{errors.role}</p>}
+      </div>
+
+      {/* Submit */}
+      <button
+        type="submit"
+        className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
+      >
+        Sign Up
+      </button>
+    </form>
+
+    <p className="mt-5 text-center text-sm text-gray-500">
+      Already have an account?{" "}
+      <a href="/login" className="text-blue-500 hover:underline">
+        Login
+      </a>
+    </p>
+  </div>
+
+  <ToastContainer />
+</div>
+
   );
 };
 

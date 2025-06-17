@@ -1,115 +1,106 @@
-import React from 'react'
-import { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import api from '../../utils/api';
-import { useAuth } from '../../utils/authProvider';
+import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { BookOpen, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import api from "../../utils/api";
+import { useAuth } from "../../utils/authProvider";
 
-const login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
-  const [message, setMessage] = useState('');
+const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("student");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const {setIsAuthenticated,setIsLoggingOut,setUserRole } =useAuth();
-    
-  
-    const handleSubmit =async (e) => {
-      e.preventDefault();
-      setMessage('');
-     if(email&&password&&role==='teacher'){
-      try{
-       const res = await api.post(`/teacher/login`, {email:email, password:password});
-       setIsAuthenticated(true);
-       setIsLoggingOut(false);
-       setUserRole('teacher')
-       toast.success('Login successfully! Redirecting...', {
-        position: 'top-right',
-        autoClose: 1000,
-      });
-      setTimeout(() => {
-        navigate('/teacher/dashboard');
-      }, 1000);
-  
+  const { setIsAuthenticated, setIsLoggingOut, setUserRole } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const loginEndpoint = role === "teacher" ? "/teacher/login" : "/student/login";
+    const redirectPath = role === "teacher" ? "/teacher/dashboard" : "/student/dashboard";
+
+    try {
+      const res = await api.post(loginEndpoint, { email, password });
+      setIsAuthenticated(true);
+      setIsLoggingOut(false);
+      setUserRole(role);
+
+      toast.success("Login successful! Redirecting...", { position: "top-right", autoClose: 800 });
+      setTimeout(() => navigate(redirectPath), 800);
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Login failed", { position: "top-right" });
+    } finally {
+      setLoading(false);
     }
-    catch(err){
-      console.log(err);
-      
-        toast.error(err.response?.data?.error || 'Login failed');
-    }
-       
-     }
-     else if(email&&password&&role==='student'){
-      try{
-        const res = await api.post(`/student/login`, {email:email, password:password});
-        setIsAuthenticated(true);
-        setIsLoggingOut(false);
-        setUserRole('student')
-        
-        toast.success('Login successfully! Redirecting...', {
-         position: 'top-right',
-         autoClose: 1000,
-       });
-       setTimeout(() => {
-         navigate('/student/dashboard');
-       }, 1000);
-   
-     }
-     catch(err){
-       console.log(err);
-       
-         toast.error(err.response?.data?.error || 'Login failed');
-     }
-     }
-     else{
-           setMessage("Enter information !!");
-     }
-      
-    };
+  };
+
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+    <div className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen flex flex-col items-center">
+      {/* Header */}
+      <header className="w-full flex justify-between items-center px-6 py-4 bg-white/50 shadow-md backdrop-blur-md">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+            <BookOpen className="w-6 h-6 text-white" />
+          </div>
+          <h1
+            className="text-2xl font-extrabold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent hover:cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            EduVerse
+          </h1>
+        </div>
+      </header>
+
+      {/* Login Card */}
+      <div className="bg-white mt-10 p-8 rounded-2xl shadow-xl w-[90%] max-w-md transition-all duration-300">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex flex-col">
-            <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-600">
+              Email
+            </label>
             <input
               type="email"
               id="email"
-              name="email"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="name@example.com"
+              className="form-input"
             />
           </div>
 
-          <div className="flex flex-col">
-            <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-600">
+              Password
+            </label>
             <input
               type="password"
               id="password"
-              name="password"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="••••••••"
+              className="form-input"
             />
+            <div className="text-right mt-1">
+              <button type="button" className="text-xs text-blue-500 hover:underline">
+                Forgot password?
+              </button>
+            </div>
           </div>
 
-          <div className="flex flex-col">
-            <label htmlFor="role" className="text-sm font-medium text-gray-700">Role</label>
+          <div>
+            <label htmlFor="role" className="block text-sm font-medium text-gray-600">
+              Role
+            </label>
             <select
               id="role"
-              name="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              required
-              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
             >
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
@@ -118,19 +109,25 @@ const login = () => {
 
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+            disabled={loading}
+            className="w-full flex justify-center items-center space-x-2 py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:opacity-90 transition duration-200 disabled:opacity-60"
           >
-            Login
+            {loading && <Loader2 className="animate-spin h-4 w-4" />}
+            <span>Login</span>
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-500">
-          Doesn't have an account? <a href="/signup" className="text-blue-500 hover:text-blue-700">Sign Up</a>
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Don't have an account?{" "}
+          <a href="/signup" className="text-blue-500 hover:underline">
+            Sign Up
+          </a>
         </p>
       </div>
+
       <ToastContainer />
     </div>
-  )
-}
+  );
+};
 
-export default login;
+export default Login;
