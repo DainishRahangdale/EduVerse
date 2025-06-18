@@ -3,6 +3,7 @@ import {
   Edit,
   Calendar,
   DollarSign,
+  IndianRupee ,
   Clock,
   Users,
   Tag,
@@ -61,13 +62,13 @@ const Hero = ({ course }) => {
                   </div>
 
                   <div className="flex items-center gap-3 p-3 bg-green-200 rounded-lg hover:scale-105">
-                    <DollarSign className="text-green-600" size={20} />
+                    <IndianRupee className="text-green-600" size={20} />
                     <div>
                       <p className="text-xs text-gray-500 uppercase tracking-wide">
                         Price
                       </p>
                       <p className="font-semibold text-gray-800">
-                        ${course.price}
+                        {course.price}
                       </p>
                     </div>
                   </div>

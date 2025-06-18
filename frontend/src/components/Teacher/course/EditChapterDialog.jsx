@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import api from '../../../utils/api'
-import { toast, ToastContainer } from 'react-toastify';
+import api from '../../../utils/api';
 
-const AddChapterDialog = ({course_id}) => {
+const EditChapterDialog = ({course_id, chapter_id}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -39,16 +38,14 @@ const AddChapterDialog = ({course_id}) => {
       return;
     }
 
-    
-
     try {
-      await api.post('teacher/course/addchapter',{title, description, course_id});
-      toast.success("chapter added successfully");
-      closeDialog();
-    } catch (error) {
-      toast.error("error in chapter addition");
-    }
-    
+        await api.put('teacher/course/editchapter',{title, description, chapter_id});
+        toast.success("chapter edit successfully");
+        closeDialog();
+      } catch (error) {
+        toast.error("error in chapter edit",error);
+      }
+
   };
 
   return (
@@ -129,11 +126,10 @@ const AddChapterDialog = ({course_id}) => {
               ×
             </button>
           </div>
-          <ToastContainer/>
         </div>
       )}
     </>
   );
 };
 
-export default AddChapterDialog;
+export default EditChapterDialog;

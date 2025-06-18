@@ -9,16 +9,10 @@ const ChapterContent = ({ chapter }) => {
     <div className="mt-6 border-t pt-5">
       {/* Topics Section */}
       <div className="flex justify-between items-center mb-4">
-        <h4 className="font-semibold text-gray-800 flex items-center">
-          <span className="mr-2">Topics</span>
-          <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">
-            {chapter.topics.length}
-          </span>
-        </h4>
         <AddTopicDialog />
       </div>
 
-      {chapter.topics.length > 0 ? (
+      {chapter.topics?.length > 0 ? (
         <ul className="space-y-3">
           {chapter.topics.map((topic) => (
             <TopicItem key={topic.id} topic={topic} />

@@ -26,10 +26,10 @@ const ChapterItem = ({ chapter, isExpanded, onToggle }) => {
 
           <div className="flex items-center space-x-3 mt-2 md:mt-0">
             <div className="text-sm font-medium px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-full">
-              {chapter.topics.length} Topics
+              {chapter.topics?.length} Topics
             </div>
             <div className="text-sm font-medium px-3 py-1.5 bg-green-100 text-green-700 rounded-full">
-              {chapter.test.length} Tests
+              {chapter.test?.length} Tests
             </div>
           </div>
         </div>
