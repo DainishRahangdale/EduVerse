@@ -60,7 +60,13 @@ export default App;
 
 const TeacherLayout = () => (
   <Routes>
-    <Route path="dashboard" element={<TeacherDashboard />} />
-    <Route path="courseDetails" element={<CourseDetails />} />
+    <Route path="dashboard" element={
+      <ProtectedRoute>
+      <TeacherDashboard />
+      </ProtectedRoute>} />
+    <Route path="courseDetails" element={
+      <ProtectedRoute>
+      <CourseDetails />
+      </ProtectedRoute>} />
   </Routes>
 );

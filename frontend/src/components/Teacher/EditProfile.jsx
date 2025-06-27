@@ -40,7 +40,7 @@ const EditProfile = ({ teacher, profileEdit }) => {
     });
   };
 
-  const MAX_SIZE = 1 * 1024 * 1024; // 1MB in bytes
+  const MAX_SIZE = 1 * 1024 * 1024;
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -145,6 +145,7 @@ const EditProfile = ({ teacher, profileEdit }) => {
               onChange={handleChange}
               className="form-input"
               required
+              readOnly
             />
           </div>
           <div>

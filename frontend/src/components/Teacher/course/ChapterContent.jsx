@@ -3,19 +3,59 @@ import AddTopicDialog from './AddTopicDialog';
 import TopicItem from './TopicItem';
 import EmptyTopicsList from './EmptyTopicList';
 import { Clock, CalendarDays, CircleDollarSign } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import api from '../../../utils/api';
 
-const ChapterContent = ({ chapter }) => {
+const ChapterContent = ({ chapter_id , setTopicln }) => {
+  if(!chapter_id)return null;
+   const [topics, setTopics] = useState([]);
+   const [tests, setTests ] = useState([]);
+   const [isCurrent, setCurrent ] = useState(null);
+   
+   const onToggle = (id)=>{
+         setCurrent((prev)=>prev === id? null: id);
+   }
+
+   const onDelete = (id)=>{
+          const filterTopic = topics.filter((topic)=>topic.topic_id !== id);
+
+          setTopics(filterTopic);
+          setTopicln(filterTopic.length);
+   }
+   
+   useEffect(()=>{
+        const fetchChapters = async ()=>{
+          try {
+             const res = await api.get(`/teacher/course/alltopics/${chapter_id}`);
+             setTopics(res.data.data);
+             setTopicln(res.data.data.length);
+          } catch (error) {
+              toast.error("error in topics fetching");
+          }
+                 
+        }
+
+        const fetchTests =async()=>{
+            try {
+            
+          } catch (error) {
+            toast.error("error in tests fetching");
+          }
+            
+        }
+        fetchChapters();
+        fetchTests();
+   }, [chapter_id]);
   return (
     <div className="mt-6 border-t pt-5">
       {/* Topics Section */}
-      <div className="flex justify-between items-center mb-4">
-        <AddTopicDialog />
-      </div>
+      
 
-      {chapter.topics?.length > 0 ? (
+      {topics?.length > 0 ? (
         <ul className="space-y-3">
-          {chapter.topics.map((topic) => (
-            <TopicItem key={topic.id} topic={topic} />
+          {topics.map((topic) => (
+            <TopicItem key={topic.topic_id} topic={topic} isExpanded={isCurrent === topic.topic_id} onToggle={onToggle} onDelete={onDelete}/>
           ))}
         </ul>
       ) : (
@@ -28,7 +68,7 @@ const ChapterContent = ({ chapter }) => {
         <h4 className="font-semibold text-gray-800 mb-4 flex items-center">
           <span className="mr-2">Chapter Tests</span>
           <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-            {chapter.test.length}
+            {tests.length}
           </span>
         </h4>
         <button
@@ -38,7 +78,7 @@ const ChapterContent = ({ chapter }) => {
             Add Test
         </button>
         </div>
-        {chapter.test && chapter.test.map((test) => (
+        {tests && tests.map((test) => (
   <div
     key={test.id}
     id={test.id}
@@ -71,6 +111,7 @@ const ChapterContent = ({ chapter }) => {
 ))}
        
       </div>
+      <ToastContainer/>
     </div>
   );
 };

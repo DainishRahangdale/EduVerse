@@ -7,3 +7,5 @@ cookie-parser
 https://blog.logrocket.com/node-js-project-architecture-best-practices/
 npm install pg
 npm install multer
+npm install express-rate-limit
+npm install express-slow-down
