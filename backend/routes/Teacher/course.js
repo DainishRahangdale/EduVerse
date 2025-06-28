@@ -1,198 +1,164 @@
 const express = require("express");
-const authenticate = require("../../middlewares/authentication");
 const router = express.Router();
 const multer = require("multer");
+const streamifier = require("streamifier");
+
+const authenticate = require("../../middlewares/authentication");
 const pool = require("../../db/db");
 const cloudinary = require("../../utils/cloudinary");
-const streamifier = require("streamifier");
+const asyncHandler = require("../../utils/asyncHandler");
+const AppError = require("../../utils/AppError");
 
 const upload = multer();
 
-const uploadToCloudinary = (imageBuffer) => {
+const uploadToCloudinary = (buffer) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       { resource_type: "raw", folder: "uploads" },
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      }
+      (err, result) => (err ? reject(err) : resolve(result))
     );
-
-    streamifier.createReadStream(imageBuffer).pipe(stream);
+    streamifier.createReadStream(buffer).pipe(stream);
   });
 };
 
-router.post("/addchapter", authenticate, async (req, res) => {
-  const { course_id, title, description } = req.body;
+// ✅ Add Chapter
+router.post(
+  "/addchapter",
+  authenticate,
+  asyncHandler(async (req, res) => {
+    const { course_id, title, description } = req.body;
 
-  try {
+    if (!course_id || !title || !description) {
+      throw new AppError("All fields are required", 400);
+    }
+
     await pool.query(
       "INSERT INTO chapters (course_id, title, description) VALUES ($1, $2, $3)",
       [course_id, title, description]
     );
 
-    res.status(201).json({ message: "Successfully added chapter" });
-  } catch (error) {
-    res.status(500).json({ error: "Error in server" });
-  }
-});
+    res.status(201).json({ message: "Chapter added successfully" });
+  })
+);
 
-router.put("/editchapter", authenticate, async (req, res) => {
-  const { chapter_id, title, description } = req.body;
+// ✅ Edit Chapter
+router.put(
+  "/editchapter",
+  authenticate,
+  asyncHandler(async (req, res) => {
+    const { chapter_id, title, description } = req.body;
 
-  if (!chapter_id || !title || !description) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
+    if (!chapter_id || !title || !description) {
+      throw new AppError("All fields are required", 400);
+    }
 
-  try {
     const result = await pool.query(
       "UPDATE chapters SET title = $1, description = $2 WHERE chapter_id = $3 RETURNING *",
       [title, description, chapter_id]
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Chapter not found" });
+      throw new AppError("Chapter not found", 404);
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Chapter successfully updated",
-        chapter: result.rows[0],
-      });
-  } catch (error) {
-    console.error("Edit chapter error:", error);
-    res.status(500).json({ error: "Error in server" });
-  }
-});
+    res.status(200).json({
+      message: "Chapter updated successfully",
+      chapter: result.rows[0],
+    });
+  })
+);
+
+
 
 router.post(
   "/addTopic",
   authenticate,
   upload.single("resource"),
-  async (req, res) => {
+  asyncHandler(async (req, res) => {
     const { title, type, chapter_id } = req.body;
 
     if (!title || !type || !chapter_id || !req.file) {
-      return res.status(400).json({ error: "All fields are required" });
+      throw new AppError("All fields including file are required", 400);
     }
 
-    try {
-      const result = await uploadToCloudinary(req.file.buffer);
+    const result = await uploadToCloudinary(req.file.buffer);
 
-      // Insert topic into the database
-      const insertQuery = `
-        INSERT INTO topics (title, type, public_id, url, chapter_id)
-        VALUES ($1, $2, $3, $4, $5)
-      `;
+    await pool.query(
+      `INSERT INTO topics (title, type, public_id, url, chapter_id)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [title, type, result.public_id, result.secure_url, chapter_id]
+    );
 
-      await pool.query(insertQuery, [
-        title,
-        type,
-        result.public_id,
-        result.secure_url,
-        chapter_id,
-      ]);
-
-      res.status(201).json({ message: "Topic added successfully" });
-    } catch (error) {
-      console.error("Error adding topic:", error);
-      res.status(500).json({ error: "Server error while adding topic" });
-    }
-  }
+    res.status(201).json({ message: "Topic added successfully" });
+  })
 );
 
-router.get("/allchapter/:course_id", authenticate, async (req, res) => {
-  const { course_id } = req.params;
-   
-   
-  if (!course_id) {
-    return res.status(400).json({ error: "Invalid course_id" });
-  }
+// ✅ Get all chapters of course
+router.get(
+  "/allchapter/:course_id",
+  authenticate,
+  asyncHandler(async (req, res) => {
+    const { course_id } = req.params;
 
-  try {
-    const data = await pool.query(
-      `select * from chapters where course_id = $1`,
-      [course_id]
-    );
-  
+    if (!course_id) throw new AppError("Invalid course_id", 400);
+
+    const data = await pool.query("SELECT * FROM chapters WHERE course_id = $1", [
+      course_id,
+    ]);
+
     res.status(200).json({ data: data.rows });
-  } catch (error) {
-    console.error("Server error:", error);
-    res.status(500).json({ error: "there is error in server" });
-  }
-});
+  })
+);
 
-router.get("/alltopics/:chapter_id", authenticate, async (req, res) => {
-  const { chapter_id } = req.params;
-   
-   
-  if (!chapter_id) {
-    return res.status(400).json({ error: "Invalid chapter_id" });
-  }
+// ✅ Get all topics of a chapter
+router.get(
+  "/alltopics/:chapter_id",
+  authenticate,
+  asyncHandler(async (req, res) => {
+    const { chapter_id } = req.params;
 
-  try {
-    const data = await pool.query(
-      `select * from topics where chapter_id = $1`,
-      [chapter_id]
-    );
+    if (!chapter_id) throw new AppError("Invalid chapter_id", 400);
+
+    const data = await pool.query("SELECT * FROM topics WHERE chapter_id = $1", [
+      chapter_id,
+    ]);
+
     res.status(200).json({ data: data.rows });
-  } catch (error) {
-   
-    res.status(500).json({ error: "there is error in server" });
-  }
-});
+  })
+);
 
-// deleteTopic
-router.delete('/deleteTopic', authenticate, async (req, res)=>{
-       
-       
-        const {topic} = req.body;
+// ✅ Delete Topic (from Cloudinary + DB)
+router.delete(
+  "/deleteTopic",
+  authenticate,
+  asyncHandler(async (req, res) => {
+    const { topic } = req.body;
 
-       
-        
+    if (!topic?.topic_id || !topic?.public_id) {
+      throw new AppError("Invalid topic data", 400);
+    }
 
-        if (!topic.topic_id) {
-    return res.status(400).json({ error: "Invalid request"});
-  }
+    await cloudinary.uploader.destroy(topic.public_id, { resource_type: "raw" });
 
-        try {
-    // 1. Delete from Cloudinary
-    await cloudinary.uploader.destroy(topic.public_id, {
-      resource_type: "raw", // use "video" or "image" if that's the type
-    });
-
-    // 2. Delete from DB
-    await pool.query('DELETE FROM topics WHERE topic_id = $1', [topic.topic_id]);
+    await pool.query("DELETE FROM topics WHERE topic_id = $1", [topic.topic_id]);
 
     res.status(200).json({ message: "Topic and file deleted successfully" });
+  })
+);
 
-  } catch (error) {
-    
-    res.status(500).json({ error: "There is an error in the server" });
-  }
-        
-});
+// ✅ Delete Chapter
+router.delete(
+  "/deleteChapter/:id",
+  authenticate,
+  asyncHandler(async (req, res) => {
+    const chapterId = parseInt(req.params.id, 10);
 
-router.delete('/deleteChapter/:id', authenticate, async (req, res) => {
- 
+    if (isNaN(chapterId)) throw new AppError("Invalid chapter ID", 400);
 
-  const chapterId = parseInt(req.params.id, 10);
+    await pool.query("DELETE FROM chapters WHERE chapter_id = $1", [chapterId]);
 
-
-if (isNaN(chapterId)) {
-  return res.status(400).json({ error: "Invalid chapter ID" });
-}
-
-try {
-  await pool.query('DELETE FROM chapters WHERE chapter_id = $1', [chapterId]);
-  res.status(200).json({ message: "Chapter deleted successfully" });
-} catch (error) {
-  console.error("Error deleting chapter:", error);
-  res.status(500).json({ error: "There is an error in the server" });
-}
-
-});
-
+    res.status(200).json({ message: "Chapter deleted successfully" });
+  })
+);
 
 module.exports = router;

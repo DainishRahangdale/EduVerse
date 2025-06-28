@@ -9,3 +9,8 @@ npm install pg
 npm install multer
 npm install express-rate-limit
 npm install express-slow-down
+npm install redis
+npm install nodemailer
+npm i uuid
+
+

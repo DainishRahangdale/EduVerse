@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BookOpen, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import { useAuth } from "../../utils/authProvider";
+import { handleApiError } from "../../utils/ErrorHandler";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -30,7 +31,7 @@ const Login = () => {
       toast.success("Login successful! Redirecting...", { position: "top-right", autoClose: 800 });
       setTimeout(() => navigate(redirectPath), 800);
     } catch (err) {
-      toast.error(err.response?.data?.error || "Login failed", { position: "top-right" });
+      handleApiError(err, "Login failed");
     } finally {
       setLoading(false);
     }
@@ -86,9 +87,9 @@ const Login = () => {
               className="form-input"
             />
             <div className="text-right mt-1">
-              <button type="button" className="text-xs text-blue-500 hover:underline">
+              <a className="text-xs text-blue-500 hover:underline" href="/passwordReset">
                 Forgot password?
-              </button>
+              </a>
             </div>
           </div>
 
@@ -125,7 +126,6 @@ const Login = () => {
         </p>
       </div>
 
-      <ToastContainer />
     </div>
   );
 };

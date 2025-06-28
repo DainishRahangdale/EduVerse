@@ -1,12 +1,19 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+
+
 const Teacher = require('./routes/teacher')
 const Student = require('./routes/student');
-const cookieParser = require('cookie-parser');
 const Logout = require('./routes/logout');
 const Auth = require('./routes/Auth');
 const Payment = require('./routes/payment');
+const ErrorHandler = require('./middlewares/ErrorHandler');
+const captcha = require('./routes/captcha');
+const sendOTP = require('./routes/sendOTP')
+
 
 const app = express();
 dotenv.config();
@@ -27,6 +34,8 @@ app.use('/student', Student);
 app.use('/logout', Logout);
 app.use('/auth', Auth);
 app.use('/payment', Payment);
+app.use('/captcha', captcha);
+app.use('/otp', sendOTP);
 
 
 app.get('/', (req, res)=>{
@@ -40,6 +49,10 @@ app.post('/', (req, res)=>{
 app.use((req, res) => {
     res.status(404).send({message:'404 Not Found correct your path'});
 });
+
+// for error handling
+
+app.use(ErrorHandler);
 
 app.listen(process.env.PORT,()=>{
     console.log(`server is running on ${(process.env.PORT)}`);  

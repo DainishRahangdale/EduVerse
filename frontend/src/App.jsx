@@ -1,4 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+
+import { CourseProvider } from "./components/Teacher/course/courseContext";
+import { AuthProvider } from "./utils/authProvider";
+import { ProtectedRoute } from "./utils/ProtectedRoute";
+
+
+
 import Home from "./pages/user/Home";
 import Course from "./pages/user/Course";
 import About from "./pages/user/About";
@@ -7,13 +16,14 @@ import Login from "./pages/user/login";
 import Signup from "./pages/user/signup";
 import TeacherDashboard from "./pages/teacher/teacherDashboard";
 import CourseDetails from "./pages/teacher/courseDetails";
-import { AuthProvider } from "./utils/authProvider";
-import { ProtectedRoute } from "./utils/ProtectedRoute";
 import StudentDashboard from "./pages/student/studentDashboard";
 import CourseDetail from "./pages/CourseDetails";
 import PaymentPage from "./pages/payment";
 import PageNotFound from "./pages/PageNotFound";
-import { CourseProvider } from "./components/Teacher/course/courseContext";
+import PasswordReset from "./pages/user/PasswordReset";
+
+
+
 
 function App() {
   return (
@@ -28,6 +38,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/coursedetails" element={<CourseDetail />} />
           <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/passwordReset" element={<PasswordReset/>}/>
 
           <Route
             path="/teacher/*"
@@ -51,7 +62,10 @@ function App() {
 
           <Route path="*" element={<PageNotFound />}></Route>
         </Routes>
+
+        <ToastContainer position="top-right" autoClose={300} pauseOnHover />
       </Router>
+
     </AuthProvider>
   );
 }

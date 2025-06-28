@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.6.1",
     "cookie-parser": "^1.4.7",
@@ -20,10 +21,14 @@
     "express-slow-down": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.0",
+    "nodemailer": "^7.0.3",
     "nodemon": "^3.1.10",
     "pg": "^8.16.0",
     "razorpay": "^2.9.6",
+    "redis": "^5.5.6",
     "serverless-http": "^3.2.0",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
+    "svg-captcha": "^1.4.0",
+    "uuid": "^11.1.0"
   }
 }

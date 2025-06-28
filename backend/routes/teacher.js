@@ -4,20 +4,18 @@ const login = require('./Teacher/login');
 const signup = require('./Teacher/signup');
 const dashboard = require('./Teacher/dashboard');
 const course = require('./Teacher/course');
-
+const resetPassword = require('./Teacher/reset-password');
 
 router.use('/login', login);
 router.use('/signup', signup);
 router.use('/dashboard', dashboard);
 router.use('/course', course);
+router.use('/reset-password', resetPassword);
 
 router.post('/', async (req, res)=>{
      
      const {email, password} = req.body;
-
-     console.log(email, password);
-
-     res.status(200).send({message:"use data recieve successfully"});
+     res.status(200).send({message:"user data recieve successfully"});
      
 });
 
