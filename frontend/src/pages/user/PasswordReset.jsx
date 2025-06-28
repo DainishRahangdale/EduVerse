@@ -95,6 +95,8 @@ const PasswordReset = () => {
       }
       setTimeout(() => navigate("/login"), 800);
     } catch (error) {
+      fetchCaptcha();
+      setOtpSent(false);
       handleApiError(error);
     }
   };
@@ -273,10 +275,14 @@ const PasswordReset = () => {
               >
                 Reset Password
               </button>
+
+              
             </>
           )}
         </div>
+          <p className="text-right">Doesn't have account <a href="/signup">Sign Up</a></p>
       </div>
+    
     </div>
   );
 };

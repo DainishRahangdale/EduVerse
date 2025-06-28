@@ -1,6 +1,6 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
-import { BookOpen, Clock, DollarSign, Users,GraduationCap , CalendarCheck,CalendarDays } from 'lucide-react';
+import { BookOpen, Clock, DollarSign, Users,GraduationCap } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer,  LineChart,
     Line,
     XAxis,
@@ -9,25 +9,11 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer,  LineChart,
     BarChart,
     Bar,
     Legend, } from 'recharts';
- import { useState, useEffect } from 'react';   
+ import { useEffect } from 'react';   
 import api from '../../utils/api';
 import { toast, ToastContainer } from 'react-toastify';
 import { useCourse } from './course/courseContext';
-  
-    const courses1 = [
-      {
-        title: "Mastering JavaScript",
-        id: 'c1',
-        image_url: "ulr",
-        duration: '3 Months',
-        price: '4999',
-        offer: '3999',
-        stream: 'Programming',
-        created_on: '2024-09-01',
-        desc: 'Learn JavaScript from scratch with projects and real-world applications.',
-        num_of_students_enrolled: 120,
-      }
-    ];
+import EmptyCoursesState from './course/EmptyCourse';  
   
 
 const CourseList = () => {
@@ -56,7 +42,7 @@ fetchData();
   
   return (
     <div className="mt-3 px-2">
-      {courses.length>0&&<CourseStats course={courses}/>}
+      {courses.length>0?<CourseStats course={courses}/>: <EmptyCoursesState/>}
       
       <div className="grid grid-cols-1 sm:grid-cols-2  gap-6">
         {courses.length>0&&courses?.map((course) => (

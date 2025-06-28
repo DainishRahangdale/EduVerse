@@ -21,6 +21,7 @@ import CourseDetail from "./pages/CourseDetails";
 import PaymentPage from "./pages/payment";
 import PageNotFound from "./pages/PageNotFound";
 import PasswordReset from "./pages/user/PasswordReset";
+import EnrolledCourse from "./pages/student/EnrolledCourse";
 
 
 
@@ -39,6 +40,8 @@ function App() {
           <Route path="/coursedetails" element={<CourseDetail />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/passwordReset" element={<PasswordReset/>}/>
+
+          <Route path='/enrolledCourse' element={<EnrolledCourse/>}/>
 
           <Route
             path="/teacher/*"

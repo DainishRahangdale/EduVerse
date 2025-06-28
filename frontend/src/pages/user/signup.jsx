@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState,useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import { useAuth } from '../../utils/authProvider';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Loader2  } from 'lucide-react';
+import { handleApiError } from '../../utils/ErrorHandler';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +13,57 @@ const SignUp = () => {
   const [role, setRole] = useState('student');
   const [name, setName] = useState('');
   const [errors, setErrors] = useState({}); // store errors per field
+  const [captchaSVG, setCaptchaSVG] = useState("");
+    const [captchaInput, setCaptchaInput] = useState("");
+    const [captchaId, setCaptchaId] = useState("");
+    const [otpSent, setOtpSent] = useState(false);
+    const [otp, setOtp] = useState("");
+    const [timer, setTimer] = useState(300); // 5 minutes = 300 seconds
+    const [timerActive, setTimerActive] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+
+     const fetchCaptcha = async () => {
+    try {
+      const res = await api.get("/captcha");
+      setCaptchaSVG(res.data.svg);
+      setCaptchaId(res.data.captchaId);
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCaptcha();
+  }, []);
+
+  const handleCaptchaVerification = async () => {
+    if (!captchaInput) return;
+    if(!email) {
+        return;
+    }
+
+    setLoading(true);
+    try {
+      await api.post("/captcha/verify", {
+        captchaId,
+        input: captchaInput,
+      });
+
+      await api.post("/otp", { email });
+      toast.success("OTP sent successfully to Your email");
+      setLoading(false);
+      setTimeout(() => {
+        setOtpSent(true);
+        setTimerActive(true);
+        setTimer(300); // Reset timer
+      }, 800);
+    } catch (err) {
+      handleApiError(err, "Captcha invalid or expired");
+     setLoading(false);
+      fetchCaptcha();
+    }
+  };
 
   const navigate = useNavigate();
   const { setIsAuthenticated, setIsLoggingOut,setUserRole } = useAuth();
@@ -41,20 +92,22 @@ const SignUp = () => {
 
     if (!role) newErrors.role = 'Role is required.';
 
+    if(!otp) newErrors.otp = 'OTP is required';
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) return; // stop submission if errors
 
     try {
       if (role === 'teacher') {
-        await api.post(`/teacher/signup`, { email, password, name });
+        await api.post(`/teacher/signup`, { email, password, name, otp });
         setIsAuthenticated(true);
         setIsLoggingOut(false);
         setUserRole('teacher');
         toast.success('Registered successfully! Redirecting...', { position: 'top-right', autoClose: 1000 });
         setTimeout(() => navigate('/teacher/dashboard'), 1000);
       } else if (role === 'student') {
-        await api.post(`/student/signup`, { email, password, name });
+        await api.post(`/student/signup`, { email, password, name, otp });
         setIsAuthenticated(true);
         setIsLoggingOut(false);
         setUserRole('student');
@@ -62,8 +115,8 @@ const SignUp = () => {
         setTimeout(() => navigate('/student/dashboard'), 1000);
       }
     } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.error || 'Signup failed');
+      handleApiError(err,'Signup failed' )
+     
     }
   };
 
@@ -78,6 +131,25 @@ const SignUp = () => {
       });
     }
   };
+
+  useEffect(() => {
+    let interval;
+  
+    if (timerActive && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+  
+    if (timer === 0 && timerActive) {
+      setOtpSent(false);
+      setOtp("");
+      alert("OTP expired! Please request again.");
+      setTimerActive(false);
+    }
+  
+    return () => clearInterval(interval);
+  }, [timer, timerActive]);
 
   return (
     <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen flex flex-col items-center">
@@ -132,8 +204,47 @@ const SignUp = () => {
         />
         {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
       </div>
+      {!otpSent && (
+            <>
+              {/* CAPTCHA Display */}
+              <div className="flex flex-col items-center">
+                <div
+                  className="my-2"
+                  dangerouslySetInnerHTML={{ __html: captchaSVG }}
+                />
+                <button
+                  type="button"
+                  onClick={fetchCaptcha}
+                  className="text-xs text-blue-500 hover:underline mb-2"
+                >
+                  Reload CAPTCHA
+                </button>
+              </div>
+              <input
+                type="text"
+                placeholder="Enter CAPTCHA"
+                value={captchaInput}
+                onChange={(e) => setCaptchaInput(e.target.value)}
+                className="form-input"
+              />
 
-      {/* Password */}
+              <button
+                onClick={handleCaptchaVerification}
+                disabled={!email || !captchaInput || loading}
+                className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:opacity-90 transition disabled:opacity-60"
+              >
+                {loading ? (
+                  <Loader2 className="animate-spin h-4 w-4 mx-auto" />
+                ) : (
+                  "Verify Captcha & Send OTP"
+                )}
+              </button>
+            </>
+          )}
+
+
+      {otpSent && <>
+           {/* Password */}
       <div>
         <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
         <input
@@ -182,6 +293,28 @@ const SignUp = () => {
         {errors.role && <p className="text-red-600 text-sm mt-1">{errors.role}</p>}
       </div>
 
+
+      <div>
+                <label
+                  htmlFor="otp"
+                  className="block text-sm font-medium text-gray-600"
+                >
+                  Enter OTP
+                </label>
+                <input
+                  type="text"
+                  id="otp"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="6-digit OTP"
+                  className="form-input"
+                />
+              </div>
+              <p className="text-sm text-gray-500 text-center">
+                Time left: {Math.floor(timer / 60)}:
+                {(timer % 60).toString().padStart(2, "0")}
+              </p>
+
       {/* Submit */}
       <button
         type="submit"
@@ -189,6 +322,8 @@ const SignUp = () => {
       >
         Sign Up
       </button>
+      </>}
+      
     </form>
 
     <p className="mt-5 text-center text-sm text-gray-500">
@@ -198,8 +333,6 @@ const SignUp = () => {
       </a>
     </p>
   </div>
-
-  <ToastContainer />
 </div>
 
   );

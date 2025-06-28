@@ -3,6 +3,8 @@ const router = express.Router();
 const pool = require('../../db/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const redis = require('../../db/redisDB');
+
 const SECRET = process.env.JWT_SECRET;
 
 const asyncHandler = require('../../utils/asyncHandler');
@@ -11,7 +13,27 @@ const AppError = require('../../utils/AppError');
 router.post(
   '/',
   asyncHandler(async (req, res) => {
-    const { email, password, name } = req.body;
+    const { email, password, name, otp } = req.body;
+  
+
+    if (!email) throw new AppError('Email is required', 400);
+  if (!otp) throw new AppError('OTP is required', 400);
+  if (!password) throw new AppError('Password is required', 400);
+  if (!name) throw new AppError('name is required', 400);
+  
+const otpKey = `otp:${email}`;
+  const storedOtp = await redis.get(otpKey);
+
+  if (!storedOtp) {
+    throw new AppError('OTP expired or not found', 400);
+  }
+
+  if (storedOtp !== otp) {
+    throw new AppError('Invalid OTP', 400);
+  }
+
+  // Invalidate OTP after successful verification
+  await redis.del(otpKey);
 
     // 1. Check if user already exists
     const userCheck = await pool.query('SELECT * FROM teacher WHERE email = $1', [email]);
