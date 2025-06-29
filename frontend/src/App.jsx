@@ -37,7 +37,11 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/coursedetails" element={<CourseDetail />} />
+          <Route path="/coursedetails" element={
+            <ProtectedRoute>
+            <CourseDetail />
+            </ProtectedRoute>
+            } />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/passwordReset" element={<PasswordReset/>}/>
 

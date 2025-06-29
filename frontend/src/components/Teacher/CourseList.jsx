@@ -58,7 +58,7 @@ fetchData();
               </div>
               <div className="flex justify-between items-center text-sm text-gray-700">
                 <span className="flex items-center gap-1"><BookOpen size={16} /> {course.stream}</span>
-                <span className="flex items-center gap-1 text-green-600"><DollarSign size={16} /> ₹{course.offer}</span>
+                <span className="flex items-center gap-1 text-green-600"> ₹{course.price}</span>
               </div>
               <div className='flex justify-between mt-2'>
               <p className="text-xs text-gray-400">Created on: {course.created_on.toLocaleString()}</p>

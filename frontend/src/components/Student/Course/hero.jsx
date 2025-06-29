@@ -22,7 +22,7 @@ import {
 
 const CoursePerformance = ({ course }) => {
   const [selectedChapterIndex, setSelectedChapterIndex] = useState(0);
-  const selectedChapter = course.performance[selectedChapterIndex];
+  const selectedChapter = course.chapters[selectedChapterIndex];
 
   const icons = [
     BookOpen,
@@ -53,11 +53,11 @@ const CoursePerformance = ({ course }) => {
           className="absolute -left-56 -top-56 inset-0 w-xl h-xl pointer-events-none opacity-40 z-0"
         >
           <g fill="none" stroke="#93c5fd" stroke-width="1.5">
-            <circle cx="100" cy="100" r="30" opacity="0.2" />
-            <circle cx="100" cy="100" r="45" opacity="0.15" />
-            <circle cx="100" cy="100" r="60" opacity="0.1" />
-            <circle cx="100" cy="100" r="75" opacity="0.08" />
-            <circle cx="100" cy="100" r="90" opacity="0.06" />
+            <circle cx="100" cy="100" r="5" opacity="0.2" />
+            <circle cx="100" cy="100" r="10" opacity="0.15" />
+            <circle cx="100" cy="100" r="15" opacity="0.2" />
+            <circle cx="100" cy="100" r="20" opacity="0.15" />
+        
           </g>
         </svg>
         <svg
@@ -135,9 +135,9 @@ const CoursePerformance = ({ course }) => {
           onChange={(e) => setSelectedChapterIndex(parseInt(e.target.value))}
           className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
         >
-          {course.performance.map((chapter, idx) => (
+          {course.chapters.map((chapter, idx) => (
             <option key={idx} value={idx}>
-              {chapter.chapter}
+              {chapter.title}
             </option>
           ))}
         </select>
@@ -148,7 +148,7 @@ const CoursePerformance = ({ course }) => {
         {/* Sidebar Tabs */}
         <div className="col-span-1 border border-slate-300 rounded-xl overflow-hidden bg-white shadow-sm">
           <div className="overflow-y-auto max-h-[400px] custom-scrollbar p-2">
-            {course.performance.map((chapter, idx) => {
+            {course.chapters.map((chapter, idx) => {
               const isActive = idx === selectedChapterIndex;
               const Icon = icons[idx % icons.length]; // Cycle through icons if > list
 
@@ -168,7 +168,7 @@ const CoursePerformance = ({ course }) => {
                       isActive ? "text-white" : "text-indigo-500"
                     }`}
                   />
-                  <span>{chapter.chapter}</span>
+                  <span>{chapter.title}</span>
                 </button>
               );
             })}
@@ -178,7 +178,7 @@ const CoursePerformance = ({ course }) => {
         {/* Graph Area */}
         <div className="col-span-3 p-6 rounded-xl shadow border border-yellow-800 bg-[#090112ea]">
           <h3 className="text-xl font-extrabold mb-4 text-amber-400">
-            {selectedChapter.chapter} - Test Performance
+            {selectedChapter.title} - Test Performance
           </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
@@ -222,7 +222,7 @@ const CoursePerformance = ({ course }) => {
       {/* Mobile chart */}
       <div className="block md:hidden bg-white rounded-lg shadow p-4">
         <h3 className="text-md font-semibold mb-3 text-gray-800">
-          {selectedChapter.chapter} - Test Performance
+          {selectedChapter.title} - Test Performance
         </h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>

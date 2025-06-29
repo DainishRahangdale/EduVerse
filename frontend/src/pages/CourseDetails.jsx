@@ -1,55 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { BookOpen, User, Calendar, Clock, Star, Play, CheckCircle, CreditCard } from "lucide-react";
+import { BookOpen, User, Clock, Star, Play, CheckCircle, CreditCard } from "lucide-react";
 import { useAuth } from "../utils/authProvider";
+import api from "../utils/api";
+import { handleApiError } from "../utils/ErrorHandler";
 
 const CourseDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { course } = location.state || {};
   const {role} = useAuth();
-
-  if (!course) {
+if (!course) {
     navigate("/courses");
     return null;
   }
+  const [chapters, setChapters] = useState([]);
+   const [activeTab, setActiveTab] = useState("overview");
 
-  const [activeTab, setActiveTab] = useState("overview");
+  
+
+ const fetchChapters = useCallback(async () => {
+  try {
+    const res = await api.get(`/allcourse/allchapters/${course.course_id}`);
+    setChapters(res.data);  
+  } catch (error) {
+    handleApiError(error, "error in server");
+  }
+}, [course.course_id]);
+
+useEffect(() => {
+  if (course?.course_id) fetchChapters();
+}, [course?.course_id, fetchChapters]);
+
+
+
+ 
 
   const NavigationHandle = ()=>{
     if(role==='teacher')navigate('/teacher/dashboard');
     else if(role==='student')navigate('/student/dashboard');
     else navigate('/login');
 }
-
-  const curriculum = [
-    {
-      title: "Getting Started",
-      lessons: [
-        { title: "Introduction to the Course", duration: "5:30", completed: false },
-        { title: "Setting Up Your Environment", duration: "12:45", completed: false },
-        { title: "Course Resources", duration: "3:20", completed: false }
-      ]
-    },
-    {
-      title: "Fundamentals",
-      lessons: [
-        { title: "Core Concepts", duration: "18:30", completed: false },
-        { title: "Basic Principles", duration: "22:15", completed: false },
-        { title: "Hands-on Practice", duration: "35:40", completed: false },
-        { title: "Quiz: Fundamentals", duration: "10:00", completed: false }
-      ]
-    },
-    {
-      title: "Advanced Topics",
-      lessons: [
-        { title: "Advanced Techniques", duration: "28:20", completed: false },
-        { title: "Best Practices", duration: "19:45", completed: false },
-        { title: "Real-world Applications", duration: "42:30", completed: false },
-        { title: "Final Project", duration: "60:00", completed: false }
-      ]
-    }
-  ];
 
   const reviews = [
     {
@@ -72,7 +63,7 @@ const CourseDetail = () => {
     }
   ];
 
-  const totalLessons = curriculum.reduce((acc, section) => acc + section.lessons.length, 0);
+  const totalLessons = chapters?.length || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
@@ -128,7 +119,7 @@ const CourseDetail = () => {
                 </span>
                 
                 <span className="bg-gray-100 rounded-xl p-1">
-                  ⭐ {course.rating} ({course.students.toLocaleString()} students)
+                  ⭐ ({course.students.toLocaleString()} students)
                 </span>
               </div>
               
@@ -215,7 +206,7 @@ const CourseDetail = () => {
                       This comprehensive course is designed to take you from beginner to advanced level. 
                       You'll learn through a combination of theoretical knowledge and practical application, 
                       ensuring you can apply what you learn immediately in real-world scenarios. 
-                      The course includes project-based learning, quizzes, and assignments to reinforce your understanding.
+                      The course includes practical-based learning, quizzes, and assignments to reinforce your understanding.
                     </p>
                   </div>
                 </div>
@@ -224,30 +215,21 @@ const CourseDetail = () => {
 
             {activeTab === "curriculum" && (
               <div className="space-y-4">
-                {curriculum.map((section, sectionIndex) => (
-                  <div key={sectionIndex} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg p-2 rounded-xl">
-                  
-                      <h1 className="text-lg">{section.title}</h1>
-                    
-                    <div className="rounded-lg">
-                      <div className="space-y-3">
-                        {section.lessons.map((lesson, lessonIndex) => (
-                          <div key={lessonIndex} className="flex items-center justify-between p-3 rounded-lg hover:bg-purple-50 transition-colors">
-                            <div className="flex items-center space-x-3">
-                              <Play className="h-5 w-5 text-purple-600" />
-                              <span className="font-medium">{lesson.title}</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <span className="text-sm text-gray-500">{lesson.duration}</span>
-                              {lesson.completed && <CheckCircle className="h-5 w-5 text-green-500" />}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+  {chapters?.map((chapter, sectionIndex) => (
+    <div
+      key={sectionIndex}
+      className=" bg-gradient-to-r from-indigo-200 to-purple-200 shadow-sm border border-indigo-200 rounded-sm p-1 transition-all hover:shadow-xl hover:-translate-y-1"
+    >
+      <div className="flex items-center gap-3">
+        <div className="bg-indigo-500 text-white w-8 h-8 flex items-center justify-center rounded-full font-semibold">
+          {sectionIndex + 1}
+        </div>
+        <h3 className="text-lg font-serif text-gray-800">{chapter.title}</h3>
+      </div>
+    </div>
+  ))}
+</div>
+
             )}
 
             {activeTab === "reviews" && (
@@ -288,11 +270,12 @@ const CourseDetail = () => {
               <div className="p-6">
                 <div className="text-center mb-6">
                   <div className="flex items-center justify-center space-x-2 mb-2">
-                    <span className="text-3xl font-bold text-purple-600">${course.price}</span>
-                    <span className="text-xl text-gray-400 line-through">${course.originalPrice}</span>
+                   <span className="text-3xl font-bold text-purple-600">{(Number(course.price) - (Number(course.price)*Number(course.offer))/100).toFixed(2)}</span>
+                    <span className="text-xl text-gray-400 line-through">{course.price}</span>
+                     
                   </div>
                   <span className="bg-red-100 text-red-700 rounded-lg p-1">
-                    Save ${(course.originalPrice - course.price).toFixed(2)}
+                    Save ${((course.price*course.offer)/100).toFixed(2)}
                   </span>
                 </div>
 
@@ -304,11 +287,6 @@ const CourseDetail = () => {
                   <CreditCard className="h-5 w-5 mt-1" />
                  <span> Enroll Now</span>
                 </button>
-
-                <div className="text-center mb-6">
-                  <p className="text-sm text-gray-600">30-day money-back guarantee</p>
-                </div>
-
                 <hr className="my-4" />
 
                 <div className="space-y-4">

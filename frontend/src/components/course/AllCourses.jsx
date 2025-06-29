@@ -1,105 +1,53 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, User, Calendar, Search } from "lucide-react";
+import api from "../../utils/api";
 
 const Courses = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStream, setSelectedStream] = useState("All");
+  const [courses,setCourses] = useState([]);
 
-  const courses = [
+  useEffect(()=>{
+      const fetchCourse = async ()=>{
+           const res = await api.get('/allcourse');
+          const fdata = res.data;
+
+          const course2 = fdata.map((data,index)=>{
+                return {
+                  ...data, rating:4.8
+                }
+          });
+          setCourses(course2);
+      }
+      fetchCourse();
+  },[]);
+
+  const courses1 = [
     {
-      id: 1,
+      course_id: 1,
       title: "Complete Web Development Bootcamp",
       instructor: "John Smith",
       category: "Web Development",
       price: 99.99,
-      originalPrice: 199.99,
+      offer: 10,
       rating: 4.8,
       students: 15420,
       duration: "42 hours",
-      
+      teacher_id : 1,
       image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&h=300&fit=crop",
       description: "Learn HTML, CSS, JavaScript, React, Node.js and more in this comprehensive bootcamp."
     },
-    {
-      id: 2,
-      title: "Data Science with Python",
-      instructor: "Sarah Johnson",
-      category: "Data Science",
-      price: 129.99,
-      originalPrice: 249.99,
-      rating: 4.9,
-      students: 8750,
-      duration: "38 hours",
-      
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=300&fit=crop",
-      description: "Master data analysis, visualization, and machine learning with Python and popular libraries."
-    },
-    {
-      id: 3,
-      title: "UI/UX Design Masterclass",
-      instructor: "Mike Chen",
-      category: "Design",
-      price: 79.99,
-      originalPrice: 159.99,
-      rating: 4.7,
-      students: 12300,
-      duration: "28 hours",
-     
-      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500&h=300&fit=crop",
-      description: "Learn modern design principles, user research, prototyping, and create stunning interfaces."
-    },
-    {
-      id: 4,
-      title: "Digital Marketing Strategy",
-      instructor: "Emma Wilson",
-      category: "Business",
-      price: 89.99,
-      originalPrice: 179.99,
-      rating: 4.6,
-      students: 9800,
-      duration: "25 hours",
-      
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=300&fit=crop",
-      description: "Master SEO, social media marketing, content marketing, and PPC advertising strategies."
-    },
-    {
-      id: 5,
-      title: "React Native Mobile Development",
-      instructor: "David Park",
-      category: "Mobile Development",
-      price: 119.99,
-      originalPrice: 239.99,
-      rating: 4.8,
-      students: 6500,
-      duration: "35 hours",
-     
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500&h=300&fit=crop",
-      description: "Build cross-platform mobile apps with React Native and deploy to iOS and Android."
-    },
-    {
-      id: 6,
-      title: "Advanced JavaScript Concepts",
-      instructor: "Lisa Rodriguez",
-      category: "Web Development",
-      price: 109.99,
-      originalPrice: 219.99,
-      rating: 4.9,
-      students: 11200,
-      duration: "32 hours",
-      
-      image: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=500&h=300&fit=crop",
-      description: "Deep dive into closures, promises, async/await, prototypes, and advanced JS patterns."
-    }
+    
   ];
 
   const uniqueStreams = useMemo(() => {
-    const set = new Set(courses.map(course => course.category));
+    const set = new Set(courses?.map(course => course.category));
     return ["All", ...Array.from(set)];
   }, [courses]);
 
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = courses?.filter(course => {
     const keyword = searchTerm.toLowerCase();
     const matchesText = course.title.toLowerCase().includes(keyword) ||
                         course.instructor.toLowerCase().includes(keyword) ||
@@ -140,7 +88,7 @@ const Courses = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCourses.map(course => (
+          {filteredCourses?.map(course => (
             <div key={course.id} className="bg-white rounded shadow-md overflow-hidden hover:shadow-lg transition-shadow relative">
               <img src={course.image} alt={course.title} className="w-full h-40 object-cover" />
               <span className="absolute top-0.5 right-2 bg-white/70 w-14 rounded-3xl px-2 h-5 text-sm font-medium">⭐{course.rating}</span>

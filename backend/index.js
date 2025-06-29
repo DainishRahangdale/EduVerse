@@ -12,7 +12,8 @@ const Auth = require('./routes/Auth');
 const Payment = require('./routes/payment');
 const ErrorHandler = require('./middlewares/ErrorHandler');
 const captcha = require('./routes/captcha');
-const sendOTP = require('./routes/sendOTP')
+const sendOTP = require('./routes/sendOTP');
+const allCourse = require('./routes/course');
 
 
 const app = express();
@@ -36,6 +37,7 @@ app.use('/auth', Auth);
 app.use('/payment', Payment);
 app.use('/captcha', captcha);
 app.use('/otp', sendOTP);
+app.use('/allcourse', allCourse);
 
 
 app.get('/', (req, res)=>{
