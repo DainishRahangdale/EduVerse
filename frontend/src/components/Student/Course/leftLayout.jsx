@@ -7,7 +7,7 @@ import {
   FlaskConical,
 } from "lucide-react";
 
-const ChapterSidebar = ({ chapters, onSelectTopic }) => {
+const ChapterSidebar = ({ chapters, onSelectTopic, fetchTopic }) => {
   const [expandedChapter, setExpandedChapter] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -32,8 +32,11 @@ const ChapterSidebar = ({ chapters, onSelectTopic }) => {
       {chapters.map((chapter, index) => (
         <div key={index} className="rounded-lg border dark:border-[#334155]">
           <button
-            onClick={() =>
-              setExpandedChapter(expandedChapter === index ? null : index)
+            onClick={() =>{
+              fetchTopic(index);
+              setExpandedChapter(expandedChapter === index ? null : index);
+            }
+              
             }
             className="w-full flex justify-between items-center px-4 py-3 font-semibold 
               bg-gray-100 hover:bg-gray-200 text-gray-800 

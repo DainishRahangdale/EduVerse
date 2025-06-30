@@ -45,7 +45,11 @@ function App() {
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/passwordReset" element={<PasswordReset/>}/>
 
-          <Route path='/enrolledCourse' element={<EnrolledCourse/>}/>
+          <Route path='/enrolledCourse' element={
+            <ProtectedRoute>
+            <EnrolledCourse/>
+            </ProtectedRoute>
+            }/>
 
           <Route
             path="/teacher/*"

@@ -14,13 +14,13 @@ const ContentViewer = ({ topic }) => {
     <div className="flex-1 p-4 bg-gray-50 dark:bg-[#0e0707ef] overflow-hidden dark:text-amber-300">
       <h2 className="text-2xl font-bold mb-4">{topic.title}</h2>
 
-      {topic.type === "video" && (
+      {topic.type === "Video" && (
         <div className="aspect-video">
           <ReactPlayer url={topic.url} controls width="100%" height="100%" />
         </div>
       )}
 
-      {topic.type === "pdf" && (
+      {topic.type === "Pdf" && (
         <iframe
           src={topic.url}
           title={topic.title}

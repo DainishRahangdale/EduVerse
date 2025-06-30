@@ -1,5 +1,4 @@
 const axios = require('axios');
-require('dotenv').config();
 
 const REDIS_REST_URL = process.env.UPSTASH_REDIS_URL;     
 const REDIS_REST_TOKEN = process.env.UPSTASH_REDIS_TOKEN; 

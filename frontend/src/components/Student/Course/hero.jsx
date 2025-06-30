@@ -20,7 +20,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const CoursePerformance = ({ course }) => {
+const CoursePerformance = ({ course, fetchTopic }) => {
+
+  
   const [selectedChapterIndex, setSelectedChapterIndex] = useState(0);
   const selectedChapter = course.chapters[selectedChapterIndex];
 
@@ -35,7 +37,7 @@ const CoursePerformance = ({ course }) => {
   ];
 
   const getChartData = (tests) =>
-    tests.map((test, idx) => ({
+    tests?.map((test, idx) => ({
       name: `Test ${idx + 1}`,
       percentage: ((test.obtained / test.total) * 100).toFixed(2),
     }));
@@ -50,7 +52,7 @@ const CoursePerformance = ({ course }) => {
         <svg
           viewBox="0 0 100 100"
           xmlns="http://www.w3.org/2000/svg"
-          className="absolute -left-56 -top-56 inset-0 w-xl h-xl pointer-events-none opacity-40 z-0"
+          className="absolute left-0 -top-72  w-xl h-xl pointer-events-none opacity-40 z-0"
         >
           <g fill="none" stroke="#93c5fd" stroke-width="1.5">
             <circle cx="100" cy="100" r="5" opacity="0.2" />
@@ -61,7 +63,7 @@ const CoursePerformance = ({ course }) => {
           </g>
         </svg>
         <svg
-          className="absolute top-0 right-0 w-72 opacity-10"
+          className="absolute top-0 left-0 w-72 opacity-10"
           viewBox="0 0 200 200"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -74,10 +76,10 @@ const CoursePerformance = ({ course }) => {
 
         {/* Title & Description */}
         <h1 className="text-2xl md:text-3xl font-extrabold mb-4 drop-shadow">
-          {course.title}
+          {course.meta?.title}
         </h1>
         <p className="text-sm opacity-90 mb-6 leading-relaxed max-w-2xl">
-          {course.description}
+          {course.meta?.description}
         </p>
 
         {/* Action Buttons */}
@@ -92,18 +94,20 @@ const CoursePerformance = ({ course }) => {
           </button>
         </div>
 
+         <img src={course.meta.thumbnail_url} alt="thumbnail"  className="absolute top-4 right-4 border-2 border-blue-400 rounded-md opacity-40"/> 
+
         {/* Info Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm text-blue-200">
           <div className="flex items-center gap-2">
-            💰 <span>{course.price}</span>
+           <span>{course.meta.stream}</span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
-            <span>{new Date(course.registeredDate).toLocaleDateString()}</span>
+            <span>{new Date(course.meta.enrolled_at).toLocaleDateString()}</span>
           </div>
           <div className="flex items-center gap-2">
             <User className="w-4 h-4" />
-            <span>{course.teacherName}</span>
+            <span>{course.meta.name}</span>
           </div>
           <div className="w-full max-w-sm">
             <div className="flex justify-between mb-1">
@@ -132,10 +136,11 @@ const CoursePerformance = ({ course }) => {
       <div className="block md:hidden mb-4">
         <select
           value={selectedChapterIndex}
-          onChange={(e) => setSelectedChapterIndex(parseInt(e.target.value))}
+          onChange={(e) =>{ fetchTopic(parseInt(e.target.value));
+            setSelectedChapterIndex(parseInt(e.target.value))}}
           className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
         >
-          {course.chapters.map((chapter, idx) => (
+          {course.chapters?.map((chapter, idx) => (
             <option key={idx} value={idx}>
               {chapter.title}
             </option>
@@ -148,14 +153,16 @@ const CoursePerformance = ({ course }) => {
         {/* Sidebar Tabs */}
         <div className="col-span-1 border border-slate-300 rounded-xl overflow-hidden bg-white shadow-sm">
           <div className="overflow-y-auto max-h-[400px] custom-scrollbar p-2">
-            {course.chapters.map((chapter, idx) => {
+            {course.chapters?.map((chapter, idx) => {
               const isActive = idx === selectedChapterIndex;
               const Icon = icons[idx % icons.length]; // Cycle through icons if > list
 
               return (
                 <button
                   key={idx}
-                  onClick={() => setSelectedChapterIndex(idx)}
+                  onClick={() => {
+                    fetchTopic(idx);
+                    setSelectedChapterIndex(idx)}}
                   className={`w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-all duration-200 text-sm font-medium
             ${
               isActive

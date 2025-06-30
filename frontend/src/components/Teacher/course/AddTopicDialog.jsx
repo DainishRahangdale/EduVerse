@@ -29,6 +29,7 @@ const AddTopicDialog = ({ chapter_id }) => {
 
   const handleSubmit = async () => {
     if (file != null && title != "") {
+      setIsUploading(true);
       const form = new FormData();
 
       form.append("title", title);
@@ -36,7 +37,7 @@ const AddTopicDialog = ({ chapter_id }) => {
       form.append("resource", file);
       form.append("chapter_id", chapter_id);
       try {
-        setIsUploading(true);
+        
         await api.post("/teacher/course/addTopic", form);
 
         toast.success("Topic add successfully",{autoClose:100});
@@ -161,7 +162,7 @@ const AddTopicDialog = ({ chapter_id }) => {
                 Cancel
               </button>
               <button
-                disabled={!title || !file}
+                disabled={!title || !file || isUploading}
                 className="px-4 py-2 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
                 onClick={handleSubmit}
               >

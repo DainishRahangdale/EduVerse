@@ -11,9 +11,8 @@ const Courses = () => {
 
   useEffect(()=>{
       const fetchCourse = async ()=>{
-           const res = await api.get('/allcourse');
+           const res = await api.get('/allcourse'); 
           const fdata = res.data;
-
           const course2 = fdata.map((data,index)=>{
                 return {
                   ...data, rating:4.8

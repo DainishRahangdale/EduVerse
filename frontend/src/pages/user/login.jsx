@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BookOpen, Loader2 } from "lucide-react";
@@ -14,6 +14,44 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { setIsAuthenticated, setIsLoggingOut, setUserRole } = useAuth();
+  const [verify, setVerify] = useState(false);
+
+  const [captchaSVG, setCaptchaSVG] = useState("");
+      const [captchaInput, setCaptchaInput] = useState("");
+      const [captchaId, setCaptchaId] = useState("");
+   
+      const fetchCaptcha = async () => {
+    try {
+      const res = await api.get("/captcha");
+      setCaptchaSVG(res.data.svg);
+      setCaptchaId(res.data.captchaId);
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
+  useEffect(() => {
+      fetchCaptcha();
+    }, []);
+
+    const handleCaptchaVerification = async () => {
+        if (!captchaInput) return;
+        setLoading(true);
+        try {
+          await api.post("/captcha/verify", {
+            captchaId,
+            input: captchaInput,
+          });
+     setVerify(true);
+        
+        } catch (err) {
+          handleApiError(err, "Captcha invalid or expired");
+          fetchCaptcha();
+        }
+        finally{
+          setLoading(false);
+        }
+      };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,6 +72,7 @@ const Login = () => {
       handleApiError(err, "Login failed");
     } finally {
       setLoading(false);
+      setVerify(false);
     }
   };
 
@@ -107,15 +146,51 @@ const Login = () => {
               <option value="teacher">Teacher</option>
             </select>
           </div>
+        {!verify&& (<>
+        <div className="flex flex-col items-center">
+                <div
+                  className="my-2"
+                  dangerouslySetInnerHTML={{ __html: captchaSVG }}
+                />
+                <button
+                  type="button"
+                  onClick={fetchCaptcha}
+                  className="text-xs text-blue-500 hover:underline mb-2"
+                >
+                  Reload CAPTCHA
+                </button>
+              </div>
+              <input
+                type="text"
+                placeholder="Enter CAPTCHA"
+                value={captchaInput}
+                onChange={(e) => setCaptchaInput(e.target.value)}
+                className="form-input"
+              />
+        </>)}
+          
 
-          <button
+
+          {verify === false ? (<button
+                          onClick={handleCaptchaVerification}
+                          disabled={!email || !captchaInput || loading}
+                          className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:opacity-90 transition disabled:opacity-60"
+                        >
+                          {loading ? (
+                            <Loader2 className="animate-spin h-4 w-4 mx-auto" />
+                          ) : (
+                            "Verify Captcha "
+                          )}
+                        </button>): (<button
             type="submit"
             disabled={loading}
             className="w-full flex justify-center items-center space-x-2 py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:opacity-90 transition duration-200 disabled:opacity-60"
           >
             {loading && <Loader2 className="animate-spin h-4 w-4" />}
             <span>Login</span>
-          </button>
+          </button>)}
+         
+          
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-500">
